@@ -1,4 +1,4 @@
-class rent_manager() :
+class Rent_Manager() :
 
     #public
     def __init__(self):

@@ -1,4 +1,4 @@
-class real_estate_manager() :
+class Real_Estate_Manager() :
 
     #public
     def __init__(self):

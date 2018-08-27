@@ -15,11 +15,45 @@ class Property_Manager() :
         return property_availability
 
     def get_property_price(self):
-        pass
-    def get_property_real_estate_price(self):
-        pass
-    def get_property_real_estate_payout(self, num_pieces):
-        pass
+        """Returns the price of a specified property.
+        Input: property_name (string) - the name of the property
+        Output: (int) the price to buy the property
+        """
+        property_price = self.db.read_value(property_name, "price")
+        return int(property_price)
+
+    def get_property_real_estate_price(self, property_name):
+        """Returns cost of building house/hotel on a specified property.
+        Input: property_name (string) - the name of the property
+        Output: (int) the price to build house/hotel
+        """
+        real_estate_price = self.db.read_value(property_name, "real_estate_price")
+        return int(real_estate_price)
+
+    def get_property_real_estate_payout(self, property_name, num_pieces):
+        """Returns rent of property with specified num of real estate built.
+        Input: property_name (string) - the name of the property. num_pieces (int) num pieces of real estate on property
+        Output: (int) the cost of rent
+        """
+        if (num_pieces == 0):
+            rent = self.db.read_value(property_name, "rent")
+            return int(rent)
+        elif (num_pieces == 1) :
+            rent = self.db.read_value(property_name, "price_for_one_house")
+            return int(rent)
+        elif (num_pieces == 2) :
+            rent = self.db.read_value(property_name, "price_for_two_houses")
+            return int(rent)
+        elif (num_pieces == 3) :
+            rent = self.db.read_value(property_name, "price_for_three_houses")
+            return int(rent)
+        elif (num_pieces == 4) :
+            rent = self.db.read_value(property_name, "price_for_four_houses")
+            return int(rent)
+        elif (num_pieces == 5) :
+            rent = self.db.read_value(property_name, "price_for_one_hotel")
+            return int(rent)
+
     def get_owner(self, property_name):
         """Returns the owner of a specified property as a string
         Inputs: property_name(str)
@@ -40,12 +74,6 @@ class Property_Manager() :
         """Returns the owner and colour of all monopolies on the board
         Inputs: None
         Outputs: Owner and colour in a list of lists where one list is the owner and another is colour"""
-
-
-
-
-
-
 
     def update_houses(self):
         """"""
