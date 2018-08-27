@@ -1,6 +1,6 @@
 import database_creator
 
-class database():
+class Database():
 
     def __init__(self):
         self.db = database_creator.get_database()
