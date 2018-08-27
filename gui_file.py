@@ -3,7 +3,6 @@ import PyQt5.QtWidgets
 import sys
 import gui_window_src
 
-
 class MainWindow(PyQt5.QtWidgets.QMainWindow,  gui_window_src.Ui_MainWindow) :
 
     def __init__(self, parent=None):
