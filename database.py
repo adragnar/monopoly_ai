@@ -1,6 +1,6 @@
 import database_creator
 
-class database():
+class Database():
 
     def __init__(self):
         self.db = database_creator.get_database()
@@ -19,7 +19,7 @@ class database():
                       "num_of_houses", "is_mortgaged", "price_for_one_house", "price_for_two_houses",
                       "price_for_three_houses", "price_for_four_houses", "price_for_one_hotel", "property_type",
                       "rent_for_one_railroad", "rent_for_two_railroads", "rent_for_three_railroads",
-                      "rent_for_four_railroads", "board_position"]:
+                      "rent_for_four_railroads", "board_position", "property_colour"]:
             final = self.db.query("SELECT " + column + " FROM main_property_deck WHERE name = :row", row=row)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
             final = self.db.query("SELECT " + column + " FROM player_information WHERE player_name = :row", row=row)
@@ -48,7 +48,7 @@ class database():
                       "num_of_houses", "is_mortgaged", "price_for_one_house", "price_for_two_houses",
                       "price_for_three_houses", "price_for_four_houses", "price_for_one_hotel", "property_type",
                       "rent_for_one_railroad", "rent_for_two_railroads", "rent_for_three_railroads",
-                      "rent_for_four_railroads", "board_position"]:
+                      "rent_for_four_railroads", "board_position", "property_colour"]:
             self.db.query("UPDATE main_property_deck SET " + column + "= " + value + " WHERE name = :row", row=row)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
             self.db.query("UPDATE player_information SET " + column + "= " + value + " WHERE player_name = :row", row=row)
