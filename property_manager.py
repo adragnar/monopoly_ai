@@ -1,10 +1,11 @@
 import database_creator
+import database
 
 class property_manager() :
 
     #public
     def __init__(self):
-        self.db = database_creator.get_database()
+        self.db = database()
 
     def get_is_property_available(self):
 
