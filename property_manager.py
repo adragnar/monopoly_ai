@@ -1,10 +1,14 @@
 import database
+import database_creator
 
 class Property_Manager() :
 
     #public
     def __init__(self):
         self.db = database.Database()
+        self.row = []
+        self.roww = []
+        self.row_final = []
 
     def get_is_property_available(self, property_name):
         """Returns a specified property's purchase status
@@ -14,7 +18,7 @@ class Property_Manager() :
         property_availability = self.db.read_value(property_name, "is_available_for_purchase")
         return property_availability
 
-    def get_property_price(self):
+    def get_property_price(self, property_name):
         """Returns the price of a specified property.
         Input: property_name (string) - the name of the property
         Output: (int) the price to buy the property
@@ -70,22 +74,105 @@ class Property_Manager() :
         num_houses = self.db.read_value(property_name, "num_of_houses")
         return int(num_houses)
 
-    def get_monopolies(self):
+    def get_monopolies(self):#not done
         """Returns the owner and colour of all monopolies on the board
         Inputs: None
-        Outputs: Owner and colour in a list of lists where one list is the owner and another is colour"""
+        Outputs: Owner and colour in a list of lists"""
 
-    def update_houses(self):
-        """"""
+        purple = self.get_colour_monopolies_owner("purple")
+        grey = self.get_colour_monopolies_owner("grey")
+        pink = self.get_colour_monopolies_owner("pink")
+        orange = self.get_colour_monopolies_owner("orange")
+        red = self.get_colour_monopolies_owner("red")
+        yellow = self.get_colour_monopolies_owner("yellow")
+        green = self.get_colour_monopolies_owner("green")
+        blue = self.get_colour_monopolies_owner("blue")
+        railroad = self.get_other_monopolies_owner("railroad")
+        utility = self.get_other_monopolies_owner("utility")
+
+        if (purple[0][0] == purple[1][0]) and (purple[0][0] and purple[1][0] != ""):
+            self.row_final.append(purple[0])
+
+        if (grey[0][0] == grey[1][0] == grey[2][0]) and (grey[0][0] and grey[1][0] and grey[2][0] != ""):
+            self.row_final.append(grey[0])
+
+        if (pink[0][0] == pink[1][0] == pink[2][0]) and (pink[0][0] and pink[1][0] and pink[2][0] != ""):
+            self.row_final.append(pink[0])
+
+        if (orange[0][0] == orange[1][0] == orange[2][0]) and (orange[0][0] and orange[1][0] and orange[2][0] != ""):
+            self.row_final.append(orange[0])
+
+        if (red[0][0] == red[1][0] == red[2][0]) and (red[0][0] and red[1][0] and red[2][0] != ""):
+            self.row_final.append(red[0])
+
+        if (yellow[0][0] == yellow[1][0] == yellow[2][0]) and (yellow[0][0] and yellow[1][0] and yellow[2][0] != ""):
+            self.row_final.append(yellow[0])
+
+        if (green[0][0] == green[1][0] == green[2][0]) and (green[0][0] and green[1][0] and green[2][0] != ""):
+            self.row_final.append(green[0])
+
+        if (blue[0][0] == blue[1][0]) and (blue[0][0] and blue[1][0] != ""):
+            self.row_final.append(blue[0])
+
+        if (railroad[0][0] == railroad[1][0] == railroad[2][0] == railroad[3][0]) and (railroad[0][0] and railroad[1][0] and railroad[2][0] and railroad[3][0] != ""):
+            self.row_final.append(railroad[0])
+
+        if (utility[0][0] == utility[1][0]) and (utility[0][0] and utility[1][0] != ""):
+            self.row_final.append(utility[0])
+        else:
+            None
+
+        print(self.row_final)
+        return self.row_final
+
+
+    def update_houses(self, num_of_houses, prop_name):#not done
+        """Change the amount of houses a property has in the database
+            Inputs: number of houses that are going to be bought or sold(int), the property they are being build on or sold from(str)
+            Outputs: None"""
+
+        self.db.write_value("num_of_houses", str(num_of_houses), prop_name)
+        return True
+
+
+
 
     #private
-    def read_property_deck(self, prop_id, info_type):
-        pass
-    def write_property_deck(self, prop_id, info_type, write_value):
-        pass
+
+    def get_colour_monopolies_owner(self, prop_colour):
+        """Is a query template that takes in prop_colour and returns if the colour has a monopoly. Is only used in get_monopolies()
+            Inputs: prop_colour(str)
+            Outputs: if the specific colour has a monopoly (yes or no(str))"""
+
+        colour_monopolies = database_creator.db.query(
+            "SELECT owner FROM main_property_deck WHERE property_colour = :prop_colour", prop_colour=prop_colour)
+        self.row = []
+        for i in colour_monopolies:
+            d = i.owner, prop_colour
+            self.row.append(d)
+        print(self.row)
+        return self.row
+        self.db.close()
+
+    def get_other_monopolies_owner(self, prop_colour):
+        """Is a query template that takes in prop_colour and returns if the colour has a monopoly. Is only used in get_monopolies()
+            Inputs: prop_colour(str), prop_colour holds prop_type. It is the same variable so that below I can see if a colour property or a utility/railroad is inputed
+            Outputs: if the specific colour has a monopoly (yes or no(str))"""
+
+        other_monopolies = database_creator.db.query(
+            "SELECT owner FROM main_property_deck WHERE property_type = :prop_colour",
+            prop_colour=prop_colour)  # prop_colour is holding prop type
+        self.roww = []
+        for j in other_monopolies:
+            h = j.owner, prop_colour
+            self.roww.append(h)
+        print(self.roww)
+        return self.roww
+        self.db.close()
+
+
 
 
 if __name__ == "__main__":
     a = Property_Manager()
-    b = a.get_num_houses("Baltic Ave.")
-    print(b)
+    a.get_monopolies()
