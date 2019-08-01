@@ -12,14 +12,12 @@ class Database():
         Output: A string with the speicified information
         Class_vars_modified: none
         """
-
-        # you still watching? y. Ok here's a little thing i never showed you, but it will simplify below.
-        # means you don't need an entire block of ORs. Ok? Just nicer code, and will be better to read. Ok, I will change it. Thanks so much. alright i'm going to log off. ok
+        # means you don't need an entire block of ORs. Ok? Just nicer code, and will be better to read.
         if column in ["name", "owner", "is_available_for_purchase", "price", "real_estate_price", "rent",
                       "num_of_houses", "is_mortgaged", "price_for_one_house", "price_for_two_houses",
                       "price_for_three_houses", "price_for_four_houses", "price_for_one_hotel", "property_type",
                       "rent_for_one_railroad", "rent_for_two_railroads", "rent_for_three_railroads",
-                      "rent_for_four_railroads", "board_position", "property_colour"]:
+                      "rent_for_four_railroads", "board_position", "property_colour", "is_a_monopoly"]:
             final = self.db.query("SELECT " + column + " FROM main_property_deck WHERE name = :row", row=row)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
             final = self.db.query("SELECT " + column + " FROM player_information WHERE player_name = :row", row=row)
@@ -32,10 +30,8 @@ class Database():
             return None
 
         result = final.first(as_dict=True)[column]
-        self.db.close()
-
+        print(result)
         return result
-
 
     def write_value(self, column, value, row):
         """replaces/updates specific information in the database
@@ -48,20 +44,20 @@ class Database():
                       "num_of_houses", "is_mortgaged", "price_for_one_house", "price_for_two_houses",
                       "price_for_three_houses", "price_for_four_houses", "price_for_one_hotel", "property_type",
                       "rent_for_one_railroad", "rent_for_two_railroads", "rent_for_three_railroads",
-                      "rent_for_four_railroads", "board_position", "property_colour"]:
-            self.db.query("UPDATE main_property_deck SET " + column + "= " + value + " WHERE name = :row", row=row)
+                      "rent_for_four_railroads", "board_position", "property_colour", "is_a_monopoly"]:
+            self.db.query("UPDATE main_property_deck SET " + column + " = :value WHERE name = :row", row=row, value=value)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
-            self.db.query("UPDATE player_information SET " + column + "= " + value + " WHERE player_name = :row", row=row)
+            self.db.query("UPDATE player_information SET " + column + " = :value WHERE player_name =  + :row", row=row, value=value)
         elif column in ["chance_name"]:
-            self.db.query("UPDATE chance_cards SET " + column + "= " + value + " WHERE chance_name = :row", row=row)
+            self.db.query("UPDATE chance_cards SET " + column + " = :value + WHERE chance_name = :row", row=row, value=value)
         elif column in ["community_chest_name"]:
-            self.db.query("UPDATE community_chest_cards SET " + column + "= " + value + " WHERE community_chest_name = :row", row=row)
+            self.db.query("UPDATE community_chest_cards SET " + column + " = :value WHERE community_chest_name = :row", row=row, value=value)
         else:
             # if the column doesn't exist anywhere (ie. a typo) return none
-            return None
+            return "That column does not exist"
 
 if __name__ == "__main__":
-    a = database()
-    print(a.write_value("money", "1500", "Player 2"))
+    a = Database()
+    print(a.read_value("Player 2", ""))
 
 

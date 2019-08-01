@@ -9,6 +9,7 @@ class Property_Manager() :
         self.row = []
         self.roww = []
         self.row_final = []
+        self.a = database.Database()
 
     def get_is_property_available(self, property_name):
         """Returns a specified property's purchase status
@@ -74,7 +75,7 @@ class Property_Manager() :
         num_houses = self.db.read_value(property_name, "num_of_houses")
         return int(num_houses)
 
-    def get_monopolies(self):#not done
+    def get_monopolies(self):
         """Returns the owner and colour of all monopolies on the board
         Inputs: None
         Outputs: Owner and colour in a list of lists"""
@@ -92,33 +93,63 @@ class Property_Manager() :
 
         if (purple[0][0] == purple[1][0]) and (purple[0][0] and purple[1][0] != ""):
             self.row_final.append(purple[0])
+            self.a.write_value("is_a_monopoly", "yes", "Baltic Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Mediterranean Ave.")
 
         if (grey[0][0] == grey[1][0] == grey[2][0]) and (grey[0][0] and grey[1][0] and grey[2][0] != ""):
             self.row_final.append(grey[0])
+            self.a.write_value("is_a_monopoly", "yes", "Oriental Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Vermont Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Connecticut Ave.")
 
         if (pink[0][0] == pink[1][0] == pink[2][0]) and (pink[0][0] and pink[1][0] and pink[2][0] != ""):
             self.row_final.append(pink[0])
+            self.a.write_value("is_a_monopoly", "yes", "St. Charles Place")
+            self.a.write_value("is_a_monopoly", "yes", "States Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Virginia Ave.")
 
         if (orange[0][0] == orange[1][0] == orange[2][0]) and (orange[0][0] and orange[1][0] and orange[2][0] != ""):
             self.row_final.append(orange[0])
+            self.a.write_value("is_a_monopoly", "yes", "St. James Place")
+            self.a.write_value("is_a_monopoly", "yes", "Tennessee Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "New York Ave.")
 
         if (red[0][0] == red[1][0] == red[2][0]) and (red[0][0] and red[1][0] and red[2][0] != ""):
             self.row_final.append(red[0])
+            self.a.write_value("is_a_monopoly", "yes", "Kentucky Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Indiana Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Illinois Ave.")
 
         if (yellow[0][0] == yellow[1][0] == yellow[2][0]) and (yellow[0][0] and yellow[1][0] and yellow[2][0] != ""):
             self.row_final.append(yellow[0])
+            self.a.write_value("is_a_monopoly", "yes", "Atlantic Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Ventnor Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Marvin Gardens")
 
         if (green[0][0] == green[1][0] == green[2][0]) and (green[0][0] and green[1][0] and green[2][0] != ""):
             self.row_final.append(green[0])
+            self.a.write_value("is_a_monopoly", "yes", "Pacific Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "North Carolina Ave.")
+            self.a.write_value("is_a_monopoly", "yes", "Pennsylvania Ave.")
 
         if (blue[0][0] == blue[1][0]) and (blue[0][0] and blue[1][0] != ""):
             self.row_final.append(blue[0])
+            self.a.write_value("is_a_monopoly", "yes", "Park Place")
+            self.a.write_value("is_a_monopoly", "yes", "Boardwalk")
+
 
         if (railroad[0][0] == railroad[1][0] == railroad[2][0] == railroad[3][0]) and (railroad[0][0] and railroad[1][0] and railroad[2][0] and railroad[3][0] != ""):
             self.row_final.append(railroad[0])
+            self.a.write_value("is_a_monopoly", "yes", "Reading Railroad")
+            self.a.write_value("is_a_monopoly", "yes", "Pennsylvania Railroad")
+            self.a.write_value("is_a_monopoly", "yes", "B. & O. Railroad")
+            self.a.write_value("is_a_monopoly", "yes", "Short Line")
 
         if (utility[0][0] == utility[1][0]) and (utility[0][0] and utility[1][0] != ""):
             self.row_final.append(utility[0])
+            self.a.write_value("is_a_monopoly", "yes", "Electric Company")
+            self.a.write_value("is_a_monopoly", "yes", "Water Works")
+
         else:
             None
 
@@ -150,9 +181,8 @@ class Property_Manager() :
         for i in colour_monopolies:
             d = i.owner, prop_colour
             self.row.append(d)
-        print(self.row)
+        #print(self.row)
         return self.row
-        self.db.close()
 
     def get_other_monopolies_owner(self, prop_colour):
         """Is a query template that takes in prop_colour and returns if the colour has a monopoly. Is only used in get_monopolies()
@@ -166,13 +196,20 @@ class Property_Manager() :
         for j in other_monopolies:
             h = j.owner, prop_colour
             self.roww.append(h)
-        print(self.roww)
+        #print(self.roww)
         return self.roww
-        self.db.close()
 
+    def get_row_final(self):
+        print(self.row_final)
+        return self.row_final
 
 
 
 if __name__ == "__main__":
     a = Property_Manager()
     a.get_monopolies()
+    #b = database.Database()
+    #a.get_row_final()
+    #b.write_value("is_available_for_purchase", "no", "Baltic Ave.")
+
+
