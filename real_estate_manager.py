@@ -5,7 +5,7 @@ import database_creator
 class Real_Estate_Manager() :
     #public
     def __init__(self):
-        self.available_houses = 33
+        self.available_houses = 32
         self.available_hotels = 12
         self.db = Database()
         self.a = Database()
