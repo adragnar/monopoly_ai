@@ -162,9 +162,33 @@ class PropertyManager:
         """Change the amount of houses a property has in the database
             Inputs: number of houses that are going to be bought or sold(int), the property they are being build on or sold from(str)
             Outputs: None"""
-
         self.db.write_value("num_of_houses", str(num_of_houses), prop_name)
         return True
+
+
+    def buy_property(self, player_name):
+        """
+        Buys a property. Gets all the values within the function. Only param is player_name
+        :param player_name: Name of the player
+        :return: None
+        """
+        current_property_name = self.get_current_property_name(player_name)
+        balance_before_purchase = self.get_balance(player_name)
+        property_cost = self.get_property_price(current_property_name)
+        new_balance = balance_before_purchase - property_cost
+
+        if self.get_is_property_available(current_property_name) == "yes":
+            if balance_before_purchase >= property_cost:
+                self.db.write_value("is_available_for_purchase", "no", current_property_name)
+                self.db.write_value("owner", player_name, current_property_name)
+                self.db.write_value("money", new_balance, player_name)
+            else:
+                print("You do not have enough money to buy this property")
+        else:
+            print("This property is not available for purchase")
+
+
+
 
 
 
@@ -206,10 +230,52 @@ class PropertyManager:
 
 
 
+
+    def get_current_location_value(self, player_name):
+        """
+        Gets a players numerical location on the board (str)
+        :param player_name: Name of player (str)
+        :return: a player's numerical location on the board (str)
+        """
+        current_location_value = self.db.read_value(player_name, "spot_on_board")
+        return current_location_value
+
+    def get_current_property_name(self, player_name):
+        """
+        Gets the name of the property a player is currently on
+        :param player_name: name of the player
+        :return: The name of the property a player is currently on (str)
+        """
+        current_location_num = self.get_current_location_value(player_name)
+        current_property_name = self.db.specific_read_value(current_location_num, "board_position", "name")
+        return current_property_name
+
+    def get_current_property_owner(self, player_name):
+        """
+        Gets the owner of the property a player is currently on
+        :param player_name: Name of the player (str)
+        :return: The owner of a property the player is currently on (str)
+        """
+        current_location_num = self.get_current_location_value(player_name)
+        current_prop_owner = self.db.specific_read_value(current_location_num, "board_position", "owner")
+        return current_prop_owner
+
+
+    def get_balance(self, player_name):
+        """
+        Return's a player's total monety
+        :param player_name: Name of the player you are getting the balance from (str)
+        :return: The amount of money they have (int)
+        """
+        balance = int(self.db.read_value(player_name, "money"))
+        return balance
+
+
+
 if __name__ == "__main__":
     a = PropertyManager()
-    a.get_monopolies()
-    print(a.get_colour_monopolies_owner("orange"))
+    #a.get_monopolies()
+    print(a.buy_property("Player 2"))
     #b = database.Database()
     #a.get_row_final()
     #b.write_value("is_available_for_purchase", "no", "Baltic Ave.")

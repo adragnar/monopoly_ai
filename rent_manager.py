@@ -17,8 +17,8 @@ class RentManager:
         Outputs: None
         :return: True if rent is owed and False if rent is not owed
         """
-        current_prop_name = self.get_current_property_name(current_player)
-        current_prop_owner = self.get_current_property_owner(current_player)
+        current_prop_name = self.property_manager.get_current_property_name(current_player)
+        current_prop_owner = self.property_manager.get_current_property_owner(current_player)
         if current_prop_owner != current_player and current_prop_owner != None:
             if self.check_if_mortgaged(current_prop_name) == False:
                 print("yes")
@@ -51,14 +51,7 @@ class RentManager:
         else:
             return False
 
-    def get_balance(self, player_name):
-        """
-        Return's a player's total monety
-        :param player_name: Name of the player you are getting the balance from (str)
-        :return: The amount of money they have (int)
-        """
-        balance = int(self.db.read_value(player_name, "money"))
-        return balance
+
 
     def check_if_and_num_houses(self, prop_name):
         """Will return the number of houses on a specific property
@@ -73,8 +66,8 @@ class RentManager:
         :param current_player: name of the current player
         :return: None
         """
-        property_name = self.get_current_property_name(current_player)
-        receiving_player = self.get_current_property_owner(current_player)
+        property_name = self.property_manager.get_current_property_name(current_player)
+        receiving_player = self.property_manager.get_current_property_owner(current_player)
         if self.check_if_monopoly(property_name):
             num_houses = self.property_manager.get_num_houses(property_name)
             if num_houses == 0:
@@ -96,8 +89,8 @@ class RentManager:
             property_rent = (int(self.db.read_value(property_name, "rent")) * 2) + real_estate_rent
 
             print("Property rent = ", property_rent)
-            current_player_balance = self.get_balance(current_player)
-            receiving_player_balance = self.get_balance(receiving_player)
+            current_player_balance = self.property_manager.get_balance(current_player)
+            receiving_player_balance = self.property_manager.get_balance(receiving_player)
             new_current_player_balance = current_player_balance - property_rent
             new_receiving_player_balance = receiving_player_balance + property_rent
             print("New receiving Player Balance = ", new_receiving_player_balance)
@@ -109,8 +102,8 @@ class RentManager:
         else:
             property_rent = int(self.db.read_value(property_name, "rent"))
             print("Property rent = ", property_rent)
-            current_player_balance = self.get_balance(current_player)
-            receiving_player_balance = self.get_balance(receiving_player)
+            current_player_balance = self.property_manager.get_balance(current_player)
+            receiving_player_balance = self.property_manager.get_balance(receiving_player)
             new_current_player_balance = current_player_balance - property_rent
             new_receiving_player_balance = receiving_player_balance + property_rent
             print("New receiving Player Balance = ", new_receiving_player_balance)
@@ -122,34 +115,7 @@ class RentManager:
 
 
     #Private
-    def get_current_location_value(self, player_name):
-        """
-        Gets a players numerical location on the board (str)
-        :param player_name: Name of player (str)
-        :return: a player's numerical location on the board (str)
-        """
-        current_location_value = self.db.read_value(player_name, "spot_on_board")
-        return current_location_value
 
-    def get_current_property_name(self, player_name):
-        """
-        Gets the name of the property a player is currently on
-        :param player_name: name of the player
-        :return: The name of the property a player is currently on (str)
-        """
-        current_location_num = self.get_current_location_value(player_name)
-        current_property_name = self.db.specific_read_value(current_location_num, "board_position", "name")
-        return current_property_name
-
-    def get_current_property_owner(self, player_name):
-        """
-        Gets the owner of the property a player is currently on
-        :param player_name: Name of the player (str)
-        :return: The owner of a property the player is currently on (str)
-        """
-        current_location_num = self.get_current_location_value(player_name)
-        current_prop_owner = self.db.specific_read_value(current_location_num, "board_position", "owner")
-        return current_prop_owner
 
 
 
