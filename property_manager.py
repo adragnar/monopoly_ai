@@ -1,7 +1,8 @@
 import database
 import database_creator
 
-class Property_Manager() :
+
+class PropertyManager:
 
     #public
     def __init__(self):
@@ -206,8 +207,9 @@ class Property_Manager() :
 
 
 if __name__ == "__main__":
-    a = Property_Manager()
+    a = PropertyManager()
     a.get_monopolies()
+    print(a.get_colour_monopolies_owner("orange"))
     #b = database.Database()
     #a.get_row_final()
     #b.write_value("is_available_for_purchase", "no", "Baltic Ave.")

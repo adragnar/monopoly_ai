@@ -1,6 +1,7 @@
 import database_creator
 
-class Database():
+
+class Database:
 
     def __init__(self):
         self.db = database_creator.get_database()
@@ -33,6 +34,36 @@ class Database():
         print(result)
         return result
 
+
+    def specific_read_value(self, row, search_column, column):
+        """
+        It is used in Rent_Manager() class. It allows you to specify each aspect of the search. Only needed in certain scenarios
+        :param row: Row is string that is the name of what we want to know about.
+        :param search_column: This is the column that we are trying to find row in
+        :param column: Column is a string name of type of info we want to get
+        :return: A string with the speicified information
+        """
+        if column in ["name", "owner", "is_available_for_purchase", "price", "real_estate_price", "rent",
+                      "num_of_houses", "is_mortgaged", "price_for_one_house", "price_for_two_houses",
+                      "price_for_three_houses", "price_for_four_houses", "price_for_one_hotel", "property_type",
+                      "rent_for_one_railroad", "rent_for_two_railroads", "rent_for_three_railroads",
+                      "rent_for_four_railroads", "board_position", "property_colour", "is_a_monopoly"]:
+            final = self.db.query("SELECT " + column + " FROM main_property_deck WHERE " + search_column + " = :row", row=row)
+        elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
+            final = self.db.query("SELECT " + column + " FROM player_information WHERE " + search_column + " = :row", row=row)
+        elif column in ["chance_name"]:
+            final = self.db.query("SELECT " + column + " FROM chance_cards WHERE " + search_column + " = :row", row=row)
+        elif column in ["community_chest_name"]:
+            final = self.db.query("SELECT " + column + " FROM community_chest_cards WHERE " + search_column + " = :row", row=row)
+        else:
+            # if the column doesn't exist anywhere (ie. a typo) return none
+            return None
+
+        result = final.first(as_dict=True)[column]
+        print(result)
+        return result
+
+
     def write_value(self, column, value, row):
         """replaces/updates specific information in the database
                 Inputs: Row is string that is the new value. Column is a string name of type of info
@@ -58,6 +89,6 @@ class Database():
 
 if __name__ == "__main__":
     a = Database()
-    print(a.read_value("Player 2", ""))
+    print(a.specific_read_value("60", "price_for_one_house", "name"))
 
 

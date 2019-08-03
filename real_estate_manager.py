@@ -1,27 +1,28 @@
-from property_manager import Property_Manager
+from property_manager import PropertyManager
 from database import Database
 import database_creator
 
-class Real_Estate_Manager() :
+
+class RealEstateManager:
+
     #public
     def __init__(self):
         self.available_houses = 32
         self.available_hotels = 12
         self.db = Database()
-        self.a = Database()
-        self.property_manager = Property_Manager()
+        self.property_manager = PropertyManager()
 
     def build_real_estate(self, num_of_houses, prop_name, player_name): #Where is the player_name input stored?
         """Builds houses and hotels on houses with monopolies
             Inputs: number of houses being built(int), property name(str), player_name(str)
             Outputs: None"""
         if self.can_build(1):
-            is_a_monopoly = self.a.read_value(prop_name, "is_a_monopoly")
+            is_a_monopoly = self.db.read_value(prop_name, "is_a_monopoly")
             if is_a_monopoly == "yes":
-                money_owned = int(self.a.read_value(player_name, "money"))
-                property_build_cost = int(self.a.read_value(prop_name, "real_estate_price"))
+                money_owned = int(self.db.read_value(player_name, "money"))
+                property_build_cost = int(self.db.read_value(prop_name, "real_estate_price"))
                 if money_owned > property_build_cost * num_of_houses:
-                    old_num_of_houses = int(self.a.read_value(prop_name, "num_of_houses"))
+                    old_num_of_houses = int(self.db.read_value(prop_name, "num_of_houses"))
                     final_num_of_houses = old_num_of_houses + num_of_houses
                     if final_num_of_houses <= 5:
                         if self.available_houses - num_of_houses > 0:
@@ -29,7 +30,7 @@ class Real_Estate_Manager() :
                             self.available_houses -= num_of_houses
                             total_cost = money_owned - (property_build_cost * num_of_houses)
                             total_cost = str(total_cost)
-                            self.a.write_value("money", total_cost, player_name)
+                            self.db.write_value("money", total_cost, player_name)
                         else:
                             print("No more houses available")
                     else:
@@ -40,7 +41,6 @@ class Real_Estate_Manager() :
 
         print(self.available_houses)
 
-
     def sell_real_estate(self, num_of_houses, prop_name, player_name):
         """Sell houses and hotels
             Inputs: number our houses being sold(int), property name(str), player_name(str)
@@ -49,11 +49,11 @@ class Real_Estate_Manager() :
             if self.property_manager.get_num_houses(prop_name) > 0:
                 if self.property_manager.get_num_houses(prop_name) >= num_of_houses:
                     #Work out refund anc make changes in database
-                    money_owned = float(self.a.read_value(player_name, "money"))
-                    property_build_cost = float(self.a.read_value(prop_name, "real_estate_price"))
+                    money_owned = float(self.db.read_value(player_name, "money"))
+                    property_build_cost = float(self.db.read_value(prop_name, "real_estate_price"))
                     refund = money_owned + ((property_build_cost / 2) * num_of_houses)
                     refund = str(refund)
-                    self.a.write_value("money", refund, player_name)
+                    self.db.write_value("money", refund, player_name)
 
                     #Subtract houses owned
                     new_num_houses = int(self.property_manager.get_num_houses(prop_name)) - num_of_houses
@@ -66,6 +66,15 @@ class Real_Estate_Manager() :
         else:
             print("You do not own that property!")
 
+    def trade_out(self, ):
+        """Send out trade opportunities to other players.
+            Inputs:
+            Outputs:
+        """
+        pass
+
+    def trade_in(self, ):
+        pass
 
     #private
     def can_build(self, is_house):#indent expected?
@@ -87,6 +96,6 @@ class Real_Estate_Manager() :
 
 
 if __name__ == "__main__":
-    c = Real_Estate_Manager()
+    c = RealEstateManager()
     print(c.sell_real_estate(3, "Baltic Ave.", "Player 2"))
 
