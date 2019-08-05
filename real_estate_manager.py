@@ -5,14 +5,14 @@ import database_creator
 
 class RealEstateManager:
 
-    #public
+    # public
     def __init__(self):
         self.available_houses = 32
         self.available_hotels = 12
         self.db = Database()
         self.property_manager = PropertyManager()
 
-    def build_real_estate(self, num_of_houses, prop_name, player_name): #Where is the player_name input stored?
+    def build_real_estate(self, num_of_houses, prop_name, player_name):  # Where is the player_name input stored?
         """Builds houses and hotels on houses with monopolies
             Inputs: number of houses being built(int), property name(str), player_name(str)
             Outputs: None"""
@@ -26,7 +26,8 @@ class RealEstateManager:
                     final_num_of_houses = old_num_of_houses + num_of_houses
                     if final_num_of_houses <= 5:
                         if self.available_houses - num_of_houses > 0:
-                            self.property_manager.update_houses(final_num_of_houses, prop_name) #num_of_houses and prop_name are given inputs. Where are those inputs stored?
+                            self.property_manager.update_houses(final_num_of_houses,
+                                                                prop_name)  # num_of_houses and prop_name are given inputs. Where are those inputs stored?
                             self.available_houses -= num_of_houses
                             total_cost = money_owned - (property_build_cost * num_of_houses)
                             total_cost = str(total_cost)
@@ -48,14 +49,14 @@ class RealEstateManager:
         if player_name == self.db.read_value(prop_name, "owner"):
             if self.property_manager.get_num_houses(prop_name) > 0:
                 if self.property_manager.get_num_houses(prop_name) >= num_of_houses:
-                    #Work out refund anc make changes in database
+                    # Work out refund anc make changes in database
                     money_owned = float(self.db.read_value(player_name, "money"))
                     property_build_cost = float(self.db.read_value(prop_name, "real_estate_price"))
                     refund = money_owned + ((property_build_cost / 2) * num_of_houses)
                     refund = str(refund)
                     self.db.write_value("money", refund, player_name)
 
-                    #Subtract houses owned
+                    # Subtract houses owned
                     new_num_houses = int(self.property_manager.get_num_houses(prop_name)) - num_of_houses
                     print("New num of houses = ", new_num_houses)
                     self.db.write_value("num_of_houses", str(new_num_houses), prop_name)
@@ -66,18 +67,49 @@ class RealEstateManager:
         else:
             print("You do not own that property!")
 
-    def trade_out(self, ):
-        """Send out trade opportunities to other players.
-            Inputs:
-            Outputs:
+    def trade(self, current_player_name, opposing_player_name, current_properties, opposing_properties, current_money,
+              opposing_money):
         """
-        pass
+        Trades stuff
+        :param current_player_name: Name of player whose turn it is
+        :param opposing_player_name: Name of player the current player is trading with
+        :param current_properties: list of all properties the current player is trading (list)
+        :param opposing_properties: List of all properties the other player is trading (list)
+        :param current_money: The amount of money the current player is giving the other player (int)
+        :param opposing_money: The amount of money the other player is giving the current player (int)
+        :param current_cards: list of all community chest or chance cards the current player is giving (list)
+        :param opposing_cards: List of all community chest or chance cards the other player is giving the current player (list)
+        :return: None
+        """
+        for i in current_properties:
+            self.db.write_value("owner", opposing_player_name, i)
+
+        for i in opposing_properties:
+            self.db.write_value("owner", current_player_name, i)
+
+        current_player_balance = int(self.db.read_value(current_player_name, "money"))
+        new_current_player_balance = current_player_balance + opposing_money - current_money
+        self.db.write_value("money", new_current_player_balance, current_player_name)
+
+        opposing_player_balance = int(self.db.read_value(opposing_player_name, "money"))
+        new_opposing_player_balance = opposing_player_balance + int(current_money) - opposing_money
+        self.db.write_value("money", new_opposing_player_balance, opposing_player_name)
+
+        self.property_manager.get_monopolies()
+        '''
+        for i in current_cards:
+            self.db.write_value("owner", opposing_player_name, i)
+
+        for i in opposing_cards:
+            self.db.write_value("owner", current_player_name, i)
+        '''
+
 
     def trade_in(self, ):
         pass
 
-    #private
-    def can_build(self, is_house):#indent expected?
+    # private
+    def can_build(self, is_house):  # indent expected?
         """Determines whether it is possible to build a house or hotel.
          Input: is_house, bool that is 1 if want to build house, 0 if want to build hotel
          Return: bool indicating whether can build 
@@ -97,5 +129,4 @@ class RealEstateManager:
 
 if __name__ == "__main__":
     c = RealEstateManager()
-    print(c.sell_real_estate(3, "Baltic Ave.", "Player 2"))
-
+    print(c.trade("Player 2", "Player 3", ["Baltic Ave.", "Oriental Ave."], ["Mediterranean Ave.", "Vermont Ave."], 125, 0))

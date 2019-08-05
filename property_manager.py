@@ -95,65 +95,100 @@ class PropertyManager:
 
         if (purple[0][0] == purple[1][0]) and (purple[0][0] and purple[1][0] != ""):
             self.row_final.append(purple[0])
-            self.a.write_value("is_a_monopoly", "yes", "Baltic Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Mediterranean Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Baltic Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Mediterranean Ave.")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Baltic Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Mediterranean Ave.")
 
         if (grey[0][0] == grey[1][0] == grey[2][0]) and (grey[0][0] and grey[1][0] and grey[2][0] != ""):
             self.row_final.append(grey[0])
-            self.a.write_value("is_a_monopoly", "yes", "Oriental Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Vermont Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Connecticut Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Oriental Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Vermont Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Connecticut Ave.")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Oriental Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Vermont Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Connecticut Ave.")
 
         if (pink[0][0] == pink[1][0] == pink[2][0]) and (pink[0][0] and pink[1][0] and pink[2][0] != ""):
             self.row_final.append(pink[0])
-            self.a.write_value("is_a_monopoly", "yes", "St. Charles Place")
-            self.a.write_value("is_a_monopoly", "yes", "States Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Virginia Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "St. Charles Place")
+            self.db.write_value("is_a_monopoly", "yes", "States Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Virginia Ave.")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "St. Charles Place")
+            self.db.write_value("is_a_monopoly", "no", "States Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Virginia Ave.")
 
         if (orange[0][0] == orange[1][0] == orange[2][0]) and (orange[0][0] and orange[1][0] and orange[2][0] != ""):
             self.row_final.append(orange[0])
-            self.a.write_value("is_a_monopoly", "yes", "St. James Place")
-            self.a.write_value("is_a_monopoly", "yes", "Tennessee Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "New York Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "St. James Place")
+            self.db.write_value("is_a_monopoly", "yes", "Tennessee Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "New York Ave.")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "St. James Place")
+            self.db.write_value("is_a_monopoly", "no", "Tennessee Ave.")
+            self.db.write_value("is_a_monopoly", "no", "New York Ave.")
 
         if (red[0][0] == red[1][0] == red[2][0]) and (red[0][0] and red[1][0] and red[2][0] != ""):
             self.row_final.append(red[0])
-            self.a.write_value("is_a_monopoly", "yes", "Kentucky Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Indiana Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Illinois Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Kentucky Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Indiana Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Illinois Ave.")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Kentucky Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Indiana Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Illinois Ave.")
 
         if (yellow[0][0] == yellow[1][0] == yellow[2][0]) and (yellow[0][0] and yellow[1][0] and yellow[2][0] != ""):
             self.row_final.append(yellow[0])
-            self.a.write_value("is_a_monopoly", "yes", "Atlantic Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Ventnor Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Marvin Gardens")
+            self.db.write_value("is_a_monopoly", "yes", "Atlantic Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Ventnor Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Marvin Gardens")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Atlantic Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Ventnor Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Marvin Gardens")
 
         if (green[0][0] == green[1][0] == green[2][0]) and (green[0][0] and green[1][0] and green[2][0] != ""):
             self.row_final.append(green[0])
-            self.a.write_value("is_a_monopoly", "yes", "Pacific Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "North Carolina Ave.")
-            self.a.write_value("is_a_monopoly", "yes", "Pennsylvania Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Pacific Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "North Carolina Ave.")
+            self.db.write_value("is_a_monopoly", "yes", "Pennsylvania Ave.")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Pacific Ave.")
+            self.db.write_value("is_a_monopoly", "no", "North Carolina Ave.")
+            self.db.write_value("is_a_monopoly", "no", "Pennsylvania Ave.")
 
         if (blue[0][0] == blue[1][0]) and (blue[0][0] and blue[1][0] != ""):
             self.row_final.append(blue[0])
-            self.a.write_value("is_a_monopoly", "yes", "Park Place")
-            self.a.write_value("is_a_monopoly", "yes", "Boardwalk")
+            self.db.write_value("is_a_monopoly", "yes", "Park Place")
+            self.db.write_value("is_a_monopoly", "yes", "Boardwalk")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Park Place")
+            self.db.write_value("is_a_monopoly", "no", "Boardwalk")
 
 
         if (railroad[0][0] == railroad[1][0] == railroad[2][0] == railroad[3][0]) and (railroad[0][0] and railroad[1][0] and railroad[2][0] and railroad[3][0] != ""):
             self.row_final.append(railroad[0])
-            self.a.write_value("is_a_monopoly", "yes", "Reading Railroad")
-            self.a.write_value("is_a_monopoly", "yes", "Pennsylvania Railroad")
-            self.a.write_value("is_a_monopoly", "yes", "B. & O. Railroad")
-            self.a.write_value("is_a_monopoly", "yes", "Short Line")
+            self.db.write_value("is_a_monopoly", "yes", "Reading Railroad")
+            self.db.write_value("is_a_monopoly", "yes", "Pennsylvania Railroad")
+            self.db.write_value("is_a_monopoly", "yes", "B. & O. Railroad")
+            self.db.write_value("is_a_monopoly", "yes", "Short Line")
+        else:
+            self.db.write_value("is_a_monopoly", "no", "Reading Railroad")
+            self.db.write_value("is_a_monopoly", "no", "Pennsylvania Railroad")
+            self.db.write_value("is_a_monopoly", "no", "B. & O. Railroad")
+            self.db.write_value("is_a_monopoly", "no", "Short Line")
 
         if (utility[0][0] == utility[1][0]) and (utility[0][0] and utility[1][0] != ""):
             self.row_final.append(utility[0])
-            self.a.write_value("is_a_monopoly", "yes", "Electric Company")
-            self.a.write_value("is_a_monopoly", "yes", "Water Works")
-
+            self.db.write_value("is_a_monopoly", "yes", "Electric Company")
+            self.db.write_value("is_a_monopoly", "yes", "Water Works")
         else:
-            None
+            self.db.write_value("is_a_monopoly", "no", "Electric Company")
+            self.db.write_value("is_a_monopoly", "no", "Water Works")
 
         print(self.row_final)
         return self.row_final
