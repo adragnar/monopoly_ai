@@ -1,6 +1,6 @@
 import database
 import database_creator
-
+import movement_manager
 
 class PropertyManager:
 
@@ -11,6 +11,7 @@ class PropertyManager:
         self.roww = []
         self.row_final = []
         self.a = database.Database()
+        self.movement_manager = movement_manager.MovementManager()
 
     def get_is_property_available(self, property_name):
         """Returns a specified property's purchase status
@@ -231,14 +232,7 @@ class PropertyManager:
 
 
 
-    def get_current_location_value(self, player_name):
-        """
-        Gets a players numerical location on the board (str)
-        :param player_name: Name of player (str)
-        :return: a player's numerical location on the board (str)
-        """
-        current_location_value = self.db.read_value(player_name, "spot_on_board")
-        return current_location_value
+
 
     def get_current_property_name(self, player_name):
         """
@@ -246,7 +240,7 @@ class PropertyManager:
         :param player_name: name of the player
         :return: The name of the property a player is currently on (str)
         """
-        current_location_num = self.get_current_location_value(player_name)
+        current_location_num = self.movement_manager.get_current_location_value(player_name)
         current_property_name = self.db.specific_read_value(current_location_num, "board_position", "name")
         return current_property_name
 
@@ -256,7 +250,7 @@ class PropertyManager:
         :param player_name: Name of the player (str)
         :return: The owner of a property the player is currently on (str)
         """
-        current_location_num = self.get_current_location_value(player_name)
+        current_location_num = self.movement_manager.get_current_location_value(player_name)
         current_prop_owner = self.db.specific_read_value(current_location_num, "board_position", "owner")
         return current_prop_owner
 
