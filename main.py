@@ -46,7 +46,10 @@ class Main:
                 else:
                     pass
 
+            # TODO Deal with Chance and Community Chest Cards
+
             # Post property buying / rent (Building)
+            real_estate_
 
 
 

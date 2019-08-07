@@ -224,9 +224,26 @@ class PropertyManager:
             print("This property is not available for purchase")
 
 
-
-
-
+    def mortgage(self, player_name, properties):
+        """
+        Will mortgage or un-mortgage properties that are fed in. It just does the opposite.
+        :param player_name: Name of the player
+        :param properties: list of properties (list)
+        :return: None
+        """  # Mortgage or Un-mortgage
+        for i in properties:
+            if self.is_mortgaged(i):
+                self.db.write_value("is_mortgaged", "no", i)
+                current_balance = self.get_balance(player_name)
+                mortgage_value = int(self.db.read_value(i, "rent")) / 2
+                new_balance = current_balance - int(mortgage_value)
+                self.db.write_value("money", new_balance, player_name)
+            else:
+                self.db.write_value("is_mortgaged", "yes", i)
+                current_balance = self.get_balance(player_name)
+                mortgage_value = int(self.db.read_value(i, "rent")) / 2
+                new_balance = current_balance + int(mortgage_value)
+                self.db.write_value("money", new_balance, player_name)
 
 
     #private
@@ -264,9 +281,17 @@ class PropertyManager:
         print(self.row_final)
         return self.row_final
 
-
-
-
+    def is_mortgaged(self, property_name):
+        """
+        Will return True if a property is mortgaged and False if it is not
+        :param property_name: Name of the property (str)
+        :return: True if the property is mortgaged and False if it is not
+        """
+        is_mortgaged = self.db.read_value(property_name, "is_mortgaged")
+        if is_mortgaged == "yes":
+            return True
+        else:
+            return False
 
 
     def get_current_property_name(self, player_name):
@@ -304,7 +329,7 @@ class PropertyManager:
 if __name__ == "__main__":
     a = PropertyManager()
     #a.get_monopolies()
-    print(a.buy_property("Player 2"))
+    print(a.mortgage("Player 2", ["Baltic Ave.", "Oriental Ave."]))
     #b = database.Database()
     #a.get_row_final()
     #b.write_value("is_available_for_purchase", "no", "Baltic Ave.")
