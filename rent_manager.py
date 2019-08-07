@@ -68,50 +68,64 @@ class RentManager:
         """
         property_name = self.property_manager.get_current_property_name(current_player)
         receiving_player = self.property_manager.get_current_property_owner(current_player)
-        if self.check_if_monopoly(property_name):
-            num_houses = self.property_manager.get_num_houses(property_name)
-            if num_houses == 0:
-                real_estate_rent = 0
-            elif num_houses == 1:
-                real_estate_rent = int(self.db.read_value(property_name, "price_for_one_house"))
-            elif num_houses == 2:
-                real_estate_rent = int(self.db.read_value(property_name, "price_for_two_houses"))
-            elif num_houses == 3:
-                real_estate_rent = int(self.db.read_value(property_name, "price_for_three_houses"))
-            elif num_houses == 4:
-                real_estate_rent = int(self.db.read_value(property_name, "price_for_four_houses"))
-            elif num_houses == 5:
-                real_estate_rent = int(self.db.read_value(property_name, "price_for_one_hotel"))
-            else:
-                pass
-            print("num houses = ", num_houses)
-            print("real estate rent = ", real_estate_rent)
-            property_rent = (int(self.db.read_value(property_name, "rent")) * 2) + real_estate_rent
+        real_estate_rent = 0
 
-            print("Property rent = ", property_rent)
+        places_where_no_pay_rent = ["Community Chest", "Chance", "Visiting Jail", "Free Parking", "Go To Jail", "Go"]
+        if self.property_manager.get_current_property_owner(current_player) == current_player:
+            pass
+        elif self.property_manager.get_current_property_name(current_player) == "Income Tax" or self.property_manager.get_current_property_name(current_player) == "Luxury Tax":
             current_player_balance = self.property_manager.get_balance(current_player)
-            receiving_player_balance = self.property_manager.get_balance(receiving_player)
-            new_current_player_balance = current_player_balance - property_rent
-            new_receiving_player_balance = receiving_player_balance + property_rent
-            print("New receiving Player Balance = ", new_receiving_player_balance)
-            print("New current player balance = ", new_current_player_balance)
-            # Money loss
-            self.db.write_value("money", new_current_player_balance, current_player)
-            # Money gain
-            self.db.write_value("money", new_receiving_player_balance, receiving_player)
-        else:
             property_rent = int(self.db.read_value(property_name, "rent"))
-            print("Property rent = ", property_rent)
-            current_player_balance = self.property_manager.get_balance(current_player)
-            receiving_player_balance = self.property_manager.get_balance(receiving_player)
             new_current_player_balance = current_player_balance - property_rent
-            new_receiving_player_balance = receiving_player_balance + property_rent
-            print("New receiving Player Balance = ", new_receiving_player_balance)
-            print("New current player balance = ", new_current_player_balance)
-            #Money loss
             self.db.write_value("money", new_current_player_balance, current_player)
-            #Money gain
-            self.db.write_value("money", new_receiving_player_balance, receiving_player)
+        elif self.property_manager.get_current_property_owner(current_player) == None or self.property_manager.get_current_property_owner(current_player) == "":
+            pass
+        elif self.property_manager.get_current_property_name(current_player) in places_where_no_pay_rent:
+            pass
+        else:
+            if self.check_if_monopoly(property_name):
+                num_houses = self.property_manager.get_num_houses(property_name)
+                if num_houses == 0:
+                    real_estate_rent = 0
+                elif num_houses == 1:
+                    real_estate_rent = int(self.db.read_value(property_name, "price_for_one_house"))
+                elif num_houses == 2:
+                    real_estate_rent = int(self.db.read_value(property_name, "price_for_two_houses"))
+                elif num_houses == 3:
+                    real_estate_rent = int(self.db.read_value(property_name, "price_for_three_houses"))
+                elif num_houses == 4:
+                    real_estate_rent = int(self.db.read_value(property_name, "price_for_four_houses"))
+                elif num_houses == 5:
+                    real_estate_rent = int(self.db.read_value(property_name, "price_for_one_hotel"))
+                else:
+                    pass
+                print("num houses = ", num_houses)
+                property_rent = (int(self.db.read_value(property_name, "rent")) * 2) + real_estate_rent
+
+                print("Property rent = ", property_rent)
+                current_player_balance = self.property_manager.get_balance(current_player)
+                receiving_player_balance = self.property_manager.get_balance(receiving_player)
+                new_current_player_balance = current_player_balance - property_rent
+                new_receiving_player_balance = receiving_player_balance + property_rent
+                print("New receiving Player Balance = ", new_receiving_player_balance)
+                print("New current player balance = ", new_current_player_balance)
+                # Money loss
+                self.db.write_value("money", new_current_player_balance, current_player)
+                # Money gain
+                self.db.write_value("money", new_receiving_player_balance, receiving_player)
+            else:
+                property_rent = int(self.db.read_value(property_name, "rent"))
+                print("Property rent = ", property_rent)
+                current_player_balance = self.property_manager.get_balance(current_player)
+                receiving_player_balance = self.property_manager.get_balance(receiving_player)
+                new_current_player_balance = current_player_balance - property_rent
+                new_receiving_player_balance = receiving_player_balance + property_rent
+                print("New receiving Player Balance = ", new_receiving_player_balance)
+                print("New current player balance = ", new_current_player_balance)
+                #Money loss
+                self.db.write_value("money", new_current_player_balance, current_player)
+                #Money gain
+                self.db.write_value("money", new_receiving_player_balance, receiving_player)
 
 
     #Private

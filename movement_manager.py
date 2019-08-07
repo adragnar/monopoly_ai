@@ -11,15 +11,15 @@ class MovementManager:
         """
         Moves the player to their place after their roll
         :param player_name: Name of player (str)
-        :param number_of_spaces: the player's roll or how many spaces they need to move.
+        :param number_of_spaces: the player's roll or how many spaces they need to move.(int)
         :return: None
         """
-        self.check_for_go_money(player_name, number_of_spaces)
+        self.check_for_go_money(player_name, str(number_of_spaces))
         current_location_value = int(self.get_current_location_value(player_name))
-        new_location_value = current_location_value + int(number_of_spaces)
+        new_location_value = current_location_value + number_of_spaces
 
-        if new_location_value == 40:
-            new_location_value = 0
+        if new_location_value >= 40:
+            new_location_value = new_location_value - 40
         else:
             pass
 
@@ -141,4 +141,4 @@ class MovementManager:
 
 if __name__ == "__main__":
     a = MovementManager()
-    a.advance_to_nearest_utility("Player 2")
+    a.move("Player 2", 12)

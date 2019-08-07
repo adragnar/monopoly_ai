@@ -129,4 +129,4 @@ class RealEstateManager:
 
 if __name__ == "__main__":
     c = RealEstateManager()
-    print(c.trade("Player 2", "Player 3", ["Baltic Ave.", "Oriental Ave."], ["Mediterranean Ave.", "Vermont Ave."], 125, 0))
+    print(c.trade("Player 2", "Player 3", ["Baltic Ave.", "Oriental Ave."], ["Mediterranean Ave.", "Vermont Ave."], 125, 150))
