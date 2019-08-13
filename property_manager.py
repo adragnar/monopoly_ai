@@ -1,17 +1,16 @@
 import database
 import database_creator
-import movement_manager
+
 
 class PropertyManager:
 
-    #public
+    # public
     def __init__(self):
         self.db = database.Database()
         self.row = []
         self.roww = []
         self.row_final = []
         self.a = database.Database()
-        self.movement_manager = movement_manager.MovementManager()
 
     def get_is_property_available(self, property_name):
         """Returns a specified property's purchase status
@@ -42,22 +41,22 @@ class PropertyManager:
         Input: property_name (string) - the name of the property. num_pieces (int) num pieces of real estate on property
         Output: (int) the cost of rent
         """
-        if (num_pieces == 0):
+        if num_pieces == 0:
             rent = self.db.read_value(property_name, "rent")
             return int(rent)
-        elif (num_pieces == 1) :
+        elif num_pieces == 1:
             rent = self.db.read_value(property_name, "price_for_one_house")
             return int(rent)
-        elif (num_pieces == 2) :
+        elif num_pieces == 2:
             rent = self.db.read_value(property_name, "price_for_two_houses")
             return int(rent)
-        elif (num_pieces == 3) :
+        elif num_pieces == 3:
             rent = self.db.read_value(property_name, "price_for_three_houses")
             return int(rent)
-        elif (num_pieces == 4) :
+        elif num_pieces == 4:
             rent = self.db.read_value(property_name, "price_for_four_houses")
             return int(rent)
-        elif (num_pieces == 5) :
+        elif num_pieces == 5:
             rent = self.db.read_value(property_name, "price_for_one_hotel")
             return int(rent)
 
@@ -169,8 +168,8 @@ class PropertyManager:
             self.db.write_value("is_a_monopoly", "no", "Park Place")
             self.db.write_value("is_a_monopoly", "no", "Boardwalk")
 
-
-        if (railroad[0][0] == railroad[1][0] == railroad[2][0] == railroad[3][0]) and (railroad[0][0] and railroad[1][0] and railroad[2][0] and railroad[3][0] != ""):
+        if (railroad[0][0] == railroad[1][0] == railroad[2][0] == railroad[3][0]) and (
+                railroad[0][0] and railroad[1][0] and railroad[2][0] and railroad[3][0] != ""):
             self.row_final.append(railroad[0])
             self.db.write_value("is_a_monopoly", "yes", "Reading Railroad")
             self.db.write_value("is_a_monopoly", "yes", "Pennsylvania Railroad")
@@ -193,22 +192,20 @@ class PropertyManager:
         print(self.row_final)
         return self.row_final
 
-
-    def update_houses(self, num_of_houses, prop_name):#not done
+    def update_houses(self, num_of_houses, prop_name):  # not done
         """Change the amount of houses a property has in the database
             Inputs: number of houses that are going to be bought or sold(int), the property they are being build on or sold from(str)
             Outputs: None"""
         self.db.write_value("num_of_houses", str(num_of_houses), prop_name)
         return True
 
-
-    def buy_property(self, player_name):
+    def buy_property(self, player_name, movement_manager):
         """
         Buys a property. Gets all the values within the function. Only param is player_name
         :param player_name: Name of the player
         :return: None
         """
-        current_property_name = self.get_current_property_name(player_name)
+        current_property_name = self.get_current_property_name(player_name, movement_manager)
         balance_before_purchase = self.get_balance(player_name)
         property_cost = self.get_property_price(current_property_name)
         new_balance = balance_before_purchase - property_cost
@@ -222,7 +219,6 @@ class PropertyManager:
                 print("You do not have enough money to buy this property")
         else:
             print("This property is not available for purchase")
-
 
     def mortgage(self, player_name, properties):
         """
@@ -245,8 +241,24 @@ class PropertyManager:
                 new_balance = current_balance + int(mortgage_value)
                 self.db.write_value("money", new_balance, player_name)
 
+    def get_num_railroads_owned(self, player_name):
+        """
+        Returns how many railroads a player owns as a number
+        :param player_name: Name of player that you want to know owns the railroads
+        :return: number of how many railroads a player owns
+        """
+        total = 0
+        if self.get_owner("Reading Railroad") == player_name:
+            total += 1
+        if self.get_owner("Pennsylvania Railroad") == player_name:
+            total += 1
+        if self.get_owner("B. & O. Railroad") == player_name:
+            total += 1
+        if self.get_owner("Short Line") == player_name:
+            total += 1
+        return total
 
-    #private
+    # private
 
     def get_colour_monopolies_owner(self, prop_colour):
         """Is a query template that takes in prop_colour and returns if the colour has a monopoly. Is only used in get_monopolies()
@@ -259,7 +271,7 @@ class PropertyManager:
         for i in colour_monopolies:
             d = i.owner, prop_colour
             self.row.append(d)
-        #print(self.row)
+        # print(self.row)
         return self.row
 
     def get_other_monopolies_owner(self, prop_colour):
@@ -274,7 +286,7 @@ class PropertyManager:
         for j in other_monopolies:
             h = j.owner, prop_colour
             self.roww.append(h)
-        #print(self.roww)
+        # print(self.roww)
         return self.roww
 
     def get_row_final(self):
@@ -293,27 +305,25 @@ class PropertyManager:
         else:
             return False
 
-
-    def get_current_property_name(self, player_name):
+    def get_current_property_name(self, player_name, movement_manager):
         """
         Gets the name of the property a player is currently on
         :param player_name: name of the player
         :return: The name of the property a player is currently on (str)
         """
-        current_location_num = self.movement_manager.get_current_location_value(player_name)
+        current_location_num = movement_manager.get_current_location_value(player_name)
         current_property_name = self.db.specific_read_value(current_location_num, "board_position", "name")
         return current_property_name
 
-    def get_current_property_owner(self, player_name):
+    def get_current_property_owner(self, player_name, movement_manager):
         """
         Gets the owner of the property a player is currently on
         :param player_name: Name of the player (str)
         :return: The owner of a property the player is currently on (str)
         """
-        current_location_num = self.movement_manager.get_current_location_value(player_name)
+        current_location_num = movement_manager.get_current_location_value(player_name)
         current_prop_owner = self.db.specific_read_value(current_location_num, "board_position", "owner")
         return current_prop_owner
-
 
     def get_balance(self, player_name):
         """
@@ -325,13 +335,10 @@ class PropertyManager:
         return balance
 
 
-
 if __name__ == "__main__":
     a = PropertyManager()
-    #a.get_monopolies()
-    print(a.mortgage("Player 2", ["Baltic Ave.", "Oriental Ave."]))
-    #b = database.Database()
-    #a.get_row_final()
-    #b.write_value("is_available_for_purchase", "no", "Baltic Ave.")
-
-
+    # a.get_monopolies()
+    print(a.get_other_monopolies_owner("utility"))
+    # b = database.Database()
+    # a.get_row_final()
+    # b.write_value("is_available_for_purchase", "no", "Baltic Ave.")

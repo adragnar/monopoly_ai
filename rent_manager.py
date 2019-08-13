@@ -1,26 +1,23 @@
 from database import Database
 import database_creator
-import property_manager
-
 
 class RentManager:
 
-    #public
+    # public
     def __init__(self):
         self.dbb = database_creator.get_database()
         self.db = Database()
-        self.property_manager = property_manager.PropertyManager()
 
-    def check_if_rent_owed(self, current_player):
+    def check_if_rent_owed(self, current_player, property_manager, movement_manager):
         """Check to see if a player needs to pay rent
         Inputs: the name of the player whose turn it is (str)
         Outputs: None
         :return: True if rent is owed and False if rent is not owed
         """
-        current_prop_name = self.property_manager.get_current_property_name(current_player)
-        current_prop_owner = self.property_manager.get_current_property_owner(current_player)
-        if current_prop_owner != current_player and current_prop_owner != None:
-            if self.check_if_mortgaged(current_prop_name) == False:
+        current_prop_name = property_manager.get_current_property_name(current_player, movement_manager)
+        current_prop_owner = property_manager.get_current_property_owner(current_player)
+        if current_prop_owner != current_player and current_prop_owner is not None:
+            if not self.check_if_mortgaged(current_prop_name):
                 print("yes")
                 return True
             else:
@@ -60,31 +57,82 @@ class RentManager:
         if_houses = self.db.read_value(prop_name, "num_of_houses")
         return if_houses
 
-    def pay_rent(self, current_player):
+    def pay_rent(self, current_player, property_manager, movement_manager):
         """
         It will pay the rent. It finds all of the information. All you need to pass in is the current player's name
         :param current_player: name of the current player
         :return: None
         """
-        property_name = self.property_manager.get_current_property_name(current_player)
-        receiving_player = self.property_manager.get_current_property_owner(current_player)
+        property_name = property_manager.get_current_property_name(current_player, movement_manager)
+        print("Property name = ", property_name)
+        receiving_player = property_manager.get_current_property_owner(current_player, movement_manager)
         real_estate_rent = 0
 
         places_where_no_pay_rent = ["Community Chest", "Chance", "Visiting Jail", "Free Parking", "Go To Jail", "Go"]
-        if self.property_manager.get_current_property_owner(current_player) == current_player:
+        railroads = ["Reading Railroad", "Pennsylvania Railroad", "B. & O. Railroad", "Short Line"]
+
+        if property_manager.get_current_property_owner(current_player, movement_manager) == current_player:
+            print("1")
             pass
-        elif self.property_manager.get_current_property_name(current_player) == "Income Tax" or self.property_manager.get_current_property_name(current_player) == "Luxury Tax":
-            current_player_balance = self.property_manager.get_balance(current_player)
-            property_rent = int(self.db.read_value(property_name, "rent"))
-            new_current_player_balance = current_player_balance - property_rent
-            self.db.write_value("money", new_current_player_balance, current_player)
-        elif self.property_manager.get_current_property_owner(current_player) == None or self.property_manager.get_current_property_owner(current_player) == "":
+        # TODO Fix electric company and water works rent. Fix roll problem
+        elif property_manager.get_current_property_name(current_player, movement_manager) == "Income Tax" or property_manager.get_current_property_name(current_player, movement_manager) == "Luxury Tax":
+            if property_manager.get_current_property_name(current_player, movement_manager) == "Income Tax":
+                current_player_balance = property_manager.get_balance(current_player)
+                property_rent = int(self.db.read_value("Income Tax", "rent"))
+                new_current_player_balance = current_player_balance - property_rent
+                self.db.write_value("money", new_current_player_balance, current_player)
+            elif property_manager.get_current_property_name(current_player, movement_manager) == "Luxury Tax":
+                current_player_balance = property_manager.get_balance(current_player)
+                property_rent = int(self.db.read_value("Luxury Tax", "rent"))
+                new_current_player_balance = current_player_balance - property_rent
+                self.db.write_value("money", new_current_player_balance, current_player)
+        elif property_manager.get_current_property_name(current_player, movement_manager) == "Electric Company" or property_manager.get_current_property_name(current_player, movement_manager) == "Water Works":
+            print("In utility loop")
+            if property_manager.get_other_monopolies_owner("utility")[0][0] == receiving_player and property_manager.get_other_monopolies_owner("utility")[1][0] == receiving_player:
+                # Monopoly rent
+                current_player_balance = property_manager.get_balance(current_player)
+                receiving_player_balance = property_manager.get_balance(receiving_player)
+
+                roll = movement_manager.roll
+                print("roll in loop is", roll)
+
+                property_rent = roll * 10
+
+                new_current_player_balance = current_player_balance - property_rent
+                new_receiving_player_balance = receiving_player_balance + property_rent
+
+                # Money loss
+                self.db.write_value("money", new_current_player_balance, current_player)
+                # Money gain
+                self.db.write_value("money", new_receiving_player_balance, receiving_player)
+            else:
+                # Non monopoly rent
+                current_player_balance = property_manager.get_balance(current_player)
+                receiving_player_balance = property_manager.get_balance(receiving_player)
+
+                roll = movement_manager.roll
+                print("roll in loop is", roll)
+
+                property_rent = roll * 4
+
+                new_current_player_balance = current_player_balance - property_rent
+                new_receiving_player_balance = receiving_player_balance + property_rent
+
+                # Money loss
+                self.db.write_value("money", new_current_player_balance, current_player)
+                # Money gain
+                self.db.write_value("money", new_receiving_player_balance, receiving_player)
+
+        elif property_manager.get_current_property_owner(current_player) is None or property_manager.get_current_property_owner(current_player) == "":
+            print("3")
             pass
-        elif self.property_manager.get_current_property_name(current_player) in places_where_no_pay_rent:
+        elif property_manager.get_current_property_name(current_player, movement_manager) in places_where_no_pay_rent:
+            print("4")
             pass
         else:
             if self.check_if_monopoly(property_name):
-                num_houses = self.property_manager.get_num_houses(property_name)
+                print("yooooooo")
+                num_houses = property_manager.get_num_houses(property_name)
                 if num_houses == 0:
                     real_estate_rent = 0
                 elif num_houses == 1:
@@ -103,8 +151,34 @@ class RentManager:
                 property_rent = (int(self.db.read_value(property_name, "rent")) * 2) + real_estate_rent
 
                 print("Property rent = ", property_rent)
-                current_player_balance = self.property_manager.get_balance(current_player)
-                receiving_player_balance = self.property_manager.get_balance(receiving_player)
+                current_player_balance = property_manager.get_balance(current_player)
+                receiving_player_balance = property_manager.get_balance(receiving_player)
+                new_current_player_balance = current_player_balance - property_rent
+                new_receiving_player_balance = receiving_player_balance + property_rent
+                print("New receiving Player Balance = ", new_receiving_player_balance)
+                print("New current player balance = ", new_current_player_balance)
+                # Money loss
+                self.db.write_value("money", new_current_player_balance, current_player)
+                # Money gain
+                self.db.write_value("money", new_receiving_player_balance, receiving_player)
+            elif property_name in railroads:
+                # TODO Fix rent for railroads
+                print("yelll")
+                print("hi")
+                print("receving player = ", receiving_player)
+                num_railroads_owned = property_manager.get_num_railroads_owned(receiving_player)
+                if num_railroads_owned == 1:
+                    property_rent = int(self.db.read_value(property_name, "rent_for_one_railroad"))
+                elif num_railroads_owned == 2:
+                    property_rent = int(self.db.read_value(property_name, "rent_for_two_railroads"))
+                elif num_railroads_owned == 3:
+                    property_rent = int(self.db.read_value(property_name, "rent_for_three_railroads"))
+                elif num_railroads_owned == 4:
+                    property_rent = int(self.db.read_value(property_name, "rent_for_four_railroads"))
+
+                print("Property rent = ", property_rent)
+                current_player_balance = property_manager.get_balance(current_player)
+                receiving_player_balance = property_manager.get_balance(receiving_player)
                 new_current_player_balance = current_player_balance - property_rent
                 new_receiving_player_balance = receiving_player_balance + property_rent
                 print("New receiving Player Balance = ", new_receiving_player_balance)
@@ -116,8 +190,8 @@ class RentManager:
             else:
                 property_rent = int(self.db.read_value(property_name, "rent"))
                 print("Property rent = ", property_rent)
-                current_player_balance = self.property_manager.get_balance(current_player)
-                receiving_player_balance = self.property_manager.get_balance(receiving_player)
+                current_player_balance = property_manager.get_balance(current_player)
+                receiving_player_balance = property_manager.get_balance(receiving_player)
                 new_current_player_balance = current_player_balance - property_rent
                 new_receiving_player_balance = receiving_player_balance + property_rent
                 print("New receiving Player Balance = ", new_receiving_player_balance)
@@ -126,13 +200,25 @@ class RentManager:
                 self.db.write_value("money", new_current_player_balance, current_player)
                 #Money gain
                 self.db.write_value("money", new_receiving_player_balance, receiving_player)
+                print("yaaaaa")
+
 
 
     #Private
+    '''
+    def get_roll(self, player_name):
+        """
+        Gets a player's roll
+        :param player_name: Name of player
+        :return: int of the player's roll
+        """
+        roll = self.db.read_value(player_name, "roll")
+        return roll
+    '''
 
 
 
 
 if __name__ == "__main__":
     b = RentManager()
-    print(b.pay_rent("Player 2"))
+    print()

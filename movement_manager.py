@@ -6,6 +6,17 @@ class MovementManager:
     # Public
     def __init__(self):
         self.db = database.Database()
+        self.roll = 0
+
+    def roll_dice(self, player_name):
+        """
+        Rolls the dice
+        :param player_name: rlly bruh
+        :return: the roll
+        """
+        roll = int(input("Enter " + player_name + "'s roll: "))
+        self.roll = roll
+        return roll
 
     def move(self, player_name, number_of_spaces):
         """
@@ -141,4 +152,4 @@ class MovementManager:
 
 if __name__ == "__main__":
     a = MovementManager()
-    a.move("Player 2", 12)
+    a.roll_dice("Player 1")
