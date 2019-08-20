@@ -41,17 +41,22 @@ class Main:
                 else:
                     print("The property was not purchased")
             else:
+                # VERY IMPORTANT!!!!!!!!!!!!!!!!! SETS UNDOCUMENTED MONOPOLIES TO "YES"
+                self.property_manager.get_monopolies()
                 # If the property is not available pay rent (this function takes care of all rent/tax stuff).
-                print("roll is, ", roll)
                 self.rent_manager.pay_rent(player_name, self.property_manager, self.movement_manager)
                 if self.property_manager.get_balance(player_name) < 0:
                     print(player_name + " is bankrupt")
                     self.players.pop(player_counter)
                 else:
                     pass
-            '''
+            #Debugged
+
+
+
             # TODO Deal with Chance and Community Chest Cards
             # TODO Deal with double rolls
+            # TODO Deal with Trading
 
             # Post property buying / rent (Building)
             # Real estate buying/selling
@@ -64,7 +69,11 @@ class Main:
                     current_balance = self.property_manager.get_balance(player_name)
                     real_estate_cost = int(self.db.read_value(property_name, "real_estate_price")) * num_real_estate
                     new_balance = current_balance - int(real_estate_cost)
-                self.db.write_value("money", new_balance, player_name)
+
+                    new_num_real_estate = int(self.rent_manager.check_if_and_num_houses(property_name)) + num_real_estate
+
+                    self.db.write_value("num_of_houses", new_num_real_estate, property_name)
+                    self.db.write_value("money", new_balance, player_name)
             else:
                 pass
 
@@ -73,14 +82,18 @@ class Main:
                 num_properties = input("How many properties was real estate sold on?: ")
                 for i in range(int(num_properties)):
                     property_name = input("What's the property's name?: ")
-                    num_real_estate = input("How much real estate was sold?: ")
+                    num_real_estate = int(input("How much real estate was sold?: "))
                     current_balance = self.property_manager.get_balance(player_name)
-                    real_estate_cost = int(self.db.read_value(property_name, "real_estate_price")) / 2 * num_real_estate
+                    real_estate_cost = int(int(self.db.read_value(property_name, "real_estate_price")) / 2 * num_real_estate)
                     new_balance = current_balance + int(real_estate_cost)
-                self.db.write_value("money", new_balance, player_name)
+
+                    new_num_real_estate = int(self.rent_manager.check_if_and_num_houses(property_name)) - num_real_estate
+
+                    self.db.write_value("num_of_houses", new_num_real_estate, property_name)
+                    self.db.write_value("money", new_balance, player_name)
             else:
                 pass
-        '''
+
 
 
 

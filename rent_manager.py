@@ -74,7 +74,6 @@ class RentManager:
         if property_manager.get_current_property_owner(current_player, movement_manager) == current_player:
             print("1")
             pass
-        # TODO Fix electric company and water works rent. Fix roll problem
         elif property_manager.get_current_property_name(current_player, movement_manager) == "Income Tax" or property_manager.get_current_property_name(current_player, movement_manager) == "Luxury Tax":
             if property_manager.get_current_property_name(current_player, movement_manager) == "Income Tax":
                 current_player_balance = property_manager.get_balance(current_player)
@@ -123,13 +122,14 @@ class RentManager:
                 # Money gain
                 self.db.write_value("money", new_receiving_player_balance, receiving_player)
 
-        elif property_manager.get_current_property_owner(current_player) is None or property_manager.get_current_property_owner(current_player) == "":
+        elif property_manager.get_current_property_owner(current_player, movement_manager) is None or property_manager.get_current_property_owner(current_player, movement_manager) == "":
             print("3")
             pass
         elif property_manager.get_current_property_name(current_player, movement_manager) in places_where_no_pay_rent:
             print("4")
             pass
         else:
+            print("LOOK HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
             if self.check_if_monopoly(property_name):
                 print("yooooooo")
                 num_houses = property_manager.get_num_houses(property_name)
@@ -162,7 +162,6 @@ class RentManager:
                 # Money gain
                 self.db.write_value("money", new_receiving_player_balance, receiving_player)
             elif property_name in railroads:
-                # TODO Fix rent for railroads
                 print("yelll")
                 print("hi")
                 print("receving player = ", receiving_player)
