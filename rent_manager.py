@@ -1,5 +1,6 @@
 from database import Database
 import database_creator
+import property_manager
 
 class RentManager:
 
@@ -204,6 +205,35 @@ class RentManager:
 
 
     #Private
+    def pay_to_bank(self, player_name, amount, property_manager):
+        """
+        Give money to bank
+        :param player_name: Name of player
+        :param amount: amount of money that is given(int)
+        :param property_manager: PropertyManager() class
+        :return: None
+        """
+        current_player_balance = property_manager.get_balance(player_name)
+        new_current_player_balance = current_player_balance - amount
+        self.db.write_value("money", new_current_player_balance, player_name)
+
+    def pay_to_other_player(self, current_player, receiving_player, money_given, property_manager):
+        """
+        Pay other players money
+        :param current_player: Giving player name
+        :param receiving_player: Receiving money player name
+        :param money_given: amount of money given (int)
+        :param property_manager: PropertyManager() clas
+        :return: None
+        """
+        current_player_balance = property_manager.get_balance(current_player)
+        receiving_player_balance = property_manager.get_balance(receiving_player)
+        new_current_player_balance = current_player_balance - money_given
+        new_receiving_player_balance = receiving_player_balance + money_given
+
+        self.db.write_value("money", new_current_player_balance, current_player)
+        self.db.write_value("money", new_receiving_player_balance, receiving_player)
+
     '''
     def get_roll(self, player_name):
         """
@@ -220,4 +250,5 @@ class RentManager:
 
 if __name__ == "__main__":
     b = RentManager()
-    print()
+    prop_manager = property_manager.PropertyManager()
+    b.pay_to_other_player("Player 1", "Player 2", 300, prop_manager)

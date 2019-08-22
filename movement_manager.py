@@ -12,11 +12,14 @@ class MovementManager:
         """
         Rolls the dice
         :param player_name: rlly bruh
-        :return: the roll
+        :return: A list storing the roll and each dice val separately
         """
-        roll = int(input("Enter " + player_name + "'s roll: "))
-        self.roll = roll
-        return roll
+        roll = input("Enter each dice value for " + player_name + "'s roll side by side: ")
+        self.roll = int(roll[0]) + int(roll[1])
+        dice1 = int(roll[0])
+        dice2 = int(roll[1])
+        roll = dice1 + dice2
+        return [roll, dice1, dice2]
 
     def move(self, player_name, number_of_spaces):
         """
@@ -42,8 +45,9 @@ class MovementManager:
         :param player_name: Name of player
         :return: None
         """
+        print("YOU ARE IN JAIL!")
         self.db.write_value("is_in_jail", "yes", player_name)
-        self.db.write_value("spot_on_board", "30", player_name)
+        self.db.write_value("spot_on_board", "10", player_name)
 
     def advance_to_stcharles_place(self, player_name):
         """
@@ -148,6 +152,17 @@ class MovementManager:
         """
         current_location_value = self.db.read_value(player_name, "spot_on_board")
         return current_location_value
+
+    def is_in_jail(self, player_name):
+        """
+        Will return True if the player is in jail and False if they are not
+        :param player_name: Name of player
+        :return: True if player is in jail and False if they are not
+        """
+        if self.db.read_value(player_name, "is_in_jail") == "yes":
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
