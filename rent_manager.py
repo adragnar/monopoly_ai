@@ -234,6 +234,18 @@ class RentManager:
         self.db.write_value("money", new_current_player_balance, current_player)
         self.db.write_value("money", new_receiving_player_balance, receiving_player)
 
+    def gain_money_from_bank(self, current_player, money):
+        """
+        Gives a player money
+        :param current_player: Name of player gaining money
+        :param money: Amount of money that is gained
+        :return: None
+        """
+        current_player_balance = property_manager.get_balance(current_player)
+        new_current_player_balance = current_player_balance + money
+        self.db.write_value("money", new_current_player_balance, current_player)
+
+
     '''
     def get_roll(self, player_name):
         """

@@ -22,9 +22,11 @@ class Database:
             final = self.db.query("SELECT " + column + " FROM main_property_deck WHERE name = :row", row=row)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
             final = self.db.query("SELECT " + column + " FROM player_information WHERE player_name = :row", row=row)
-        elif column in ["chance_name"]:
+        elif column in ["chance_name", "chance_money_gained", "chance_money_lost", "chance_move_forward",
+                        "chance_move_backward"]:
             final = self.db.query("SELECT " + column + " FROM chance_cards WHERE chance_name = :row", row=row)
-        elif column in ["community_chest_name"]:
+        elif column in ["community_chest_name", "community_chest_money_gained", "community_chest_money_lost",
+                        "community_chest_move_forward", "community_chest_move_backward"]:
             final = self.db.query("SELECT " + column + " FROM community_chest_cards WHERE community_chest_name = :row", row=row)
         else:
             # if the column doesn't exist anywhere (ie. a typo) return none
@@ -51,9 +53,11 @@ class Database:
             final = self.db.query("SELECT " + column + " FROM main_property_deck WHERE " + search_column + " = :row", row=row)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
             final = self.db.query("SELECT " + column + " FROM player_information WHERE " + search_column + " = :row", row=row)
-        elif column in ["chance_name"]:
+        elif column in ["chance_name", "chance_money_gained", "chance_money_lost", "chance_move_forward",
+                        "chance_move_backward"]:
             final = self.db.query("SELECT " + column + " FROM chance_cards WHERE " + search_column + " = :row", row=row)
-        elif column in ["community_chest_name"]:
+        elif column in ["community_chest_name", "community_chest_money_gained", "community_chest_money_lost",
+                        "community_chest_move_forward", "community_chest_move_backward"]:
             final = self.db.query("SELECT " + column + " FROM community_chest_cards WHERE " + search_column + " = :row", row=row)
         else:
             # if the column doesn't exist anywhere (ie. a typo) return none
@@ -79,9 +83,11 @@ class Database:
             self.db.query("UPDATE main_property_deck SET " + column + " = :value WHERE name = :row", row=row, value=value)
         elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
             self.db.query("UPDATE player_information SET " + column + " = :value WHERE player_name =  + :row", row=row, value=value)
-        elif column in ["chance_name"]:
+        elif column in ["chance_name", "chance_money_gained", "chance_money_lost", "chance_move_forward",
+                        "chance_move_backward"]:
             self.db.query("UPDATE chance_cards SET " + column + " = :value + WHERE chance_name = :row", row=row, value=value)
-        elif column in ["community_chest_name"]:
+        elif column in ["community_chest_name", "community_chest_money_gained", "community_chest_money_lost",
+                        "community_chest_move_forward", "community_chest_move_backward"]:
             self.db.query("UPDATE community_chest_cards SET " + column + " = :value WHERE community_chest_name = :row", row=row, value=value)
         else:
             # if the column doesn't exist anywhere (ie. a typo) return none

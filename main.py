@@ -15,11 +15,19 @@ class Main:
 
         self.num_players = 0
         self.players = []
+        self.num_npc = 0
 
     def main(self):
         self.num_players = int(input("How many players total are in the game (including me)?: "))
         for i in range(1, self.num_players + 1):
             self.players.append("Player " + str(i))
+
+        # Add the NPCs
+        self.num_npc = int(input("How many NPCs total are in the game?: "))
+        for i in range(1, self.num_npc +1):
+            self.players.append("NPC " + str(i))
+
+
 
         player_counter = 0
         while 1:
@@ -27,34 +35,88 @@ class Main:
             print("The player name is", player_name)
             # Roll / jail
             double_roll_counter = 0
-            jail_roll_counter = 0
 
             # Turn begins
             while 3 > double_roll_counter > -1:
+                # If they land on Chance or Community Chest spot
+                community_chest_spots = ["2", "17", "33"]
+                chance_spots = ["7", "22", "36"]
+                if self.movement_manager.get_current_location_value(player_name) in community_chest_spots:
+                    specific_card = input("Enter the first two words of your community chest card (including capital letters): ")
+                    if specific_card in ["Bank error", "From sale", "Holiday fund", "Income tax", "It is", "Life insurance", "Receive $25", "You have", "You inherit"]:
+                        money = int(self.db.read_value(specific_card, "community_chest_money_gained"))
+                        self.rent_manager.gain_money_from_bank(player_name, money)
+                    else:
+                        pass
+
+
+
+
+
+
+
+
+
+
+
+
                 # Player's turn in jail
                 if self.movement_manager.is_in_jail(player_name):
                     if int(self.db.read_value(player_name, "num_get_out_of_jail")) > 0:
-                        use_get_out_of_jail_card = input("You have a get out of jail free card. Would you like to use it? (yes/no):")
-                        if use_get_out_of_jail_card == "yes":
-                            self.db.write_value("num_get_out_of_jail", "0", player_name)
-                            roll = self.movement_manager.roll_dice(player_name)
-                            roll = roll[0]
-                            self.movement_manager.move(player_name, roll)
-                            self.db.write_value("is_in_jail", "no", player_name)
-                            jail_roll_counter = 0
+                        # NPC handling if in jail
+                        if player_name[0] == "N":
+                            if self.movement_manager.check_get_out_cards(player_name) == True:
+                                self.movement_manager.leave_jail(player_name)
+                                self.movement_manager.roll_dice_in_jail(player_name)
+                                self.movement_manager.resetJailRolls(player_name)
+                            else:
+                                pass
                         else:
-                            pass
+                            use_get_out_of_jail_card = input("You have a get out of jail free card. Would you like to use it? (yes/no):")
+                            if use_get_out_of_jail_card == "yes":
+                                self.movement_manager.leave_jail(player_name)
+                                self.movement_manager.roll_dice_in_jail(player_name)
+                                self.movement_manager.resetJailRolls(player_name)
+                            else:
+                                pass
 
                     else:
-                        pay_for_roll = input("Would you like to pay $50 to get out of jail?")
+                        #NPC Handling
+                        if player_name[0] == "N":
+                            if self.property_manager.get_balance(player_name) >= 150:
+                                self.rent_manager.pay_to_bank(player_name, 50, self.property_manager)
+                                self.movement_manager.roll_dice_in_jail(player_name)
+                                self.movement_manager.leave_jail(player_name)
+                                self.movement_manager.resetJailRolls(player_name)
+                            else:
+                                print("Roll to get out of jail")
+                                roll = self.movement_manager.npcDiceRoll()
+                                dice1 = roll[1]
+                                dice2 = roll[2]
+                                roll = roll[0]
+                                if dice1 == dice2:
+                                    print("You have rolled out of jail")
+                                    self.movement_manager.move(player_name, roll)
+                                    self.movement_manager.leave_jail(player_name)
+                                    self.movement_manager.resetJailRolls(player_name)
+                                    break
+                                else:
+                                    # TODO Rolling out of jail (after 3 rolls you are automatically out),
+                                    print("You have not rolled out of jail")
+                                    self.movement_manager.incrementJailRolls(player_name)
+                                    if self.movement_manager.getNumJailRolls(player_name) == 3:
+                                        self.movement_manager.move(player_name, roll)
+                                        self.movement_manager.leave_jail(player_name)
+                                        self.movement_manager.resetJailRolls(player_name)
+                                    break
+                        else:
+                            pay_for_roll = input("Would you like to pay $50 to get out of jail?")
                         if pay_for_roll == "yes":
                             # Give money to bank
                             self.rent_manager.pay_to_bank(player_name, 50, self.property_manager)
-                            roll = self.movement_manager.roll_dice(player_name)
-                            roll = roll[0]
-                            self.movement_manager.move(player_name, roll)
-                            self.db.write_value("is_in_jail", "no", player_name)
-                            jail_roll_counter = 0
+                            self.movement_manager.roll_dice_in_jail(player_name)
+                            self.movement_manager.leave_jail(player_name)
+                            self.movement_manager.resetJailRolls(player_name)
                         else:
                             print("Roll to get out of jail")
                             roll = self.movement_manager.roll_dice(player_name)
@@ -64,20 +126,22 @@ class Main:
                             if dice1 == dice2:
                                 print("You have rolled out of jail")
                                 self.movement_manager.move(player_name, roll)
-                                self.db.write_value("is_in_jail", "no", player_name)
-                                jail_roll_counter = 0
+                                self.movement_manager.leave_jail(player_name)
+                                self.movement_manager.resetJailRolls(player_name)
                                 break
                             else:
                                 # TODO Rolling out of jail (after 3 rolls you are automatically out),
                                 print("You have not rolled out of jail")
-                                jail_roll_counter += 1
-                                if jail_roll_counter == 3:
+                                self.movement_manager.incrementJailRolls(player_name)
+                                if self.movement_manager.getNumJailRolls(player_name) == 3:
                                     self.movement_manager.move(player_name, roll)
-                                    self.db.write_value("is_in_jail", "no", player_name)
-                                    jail_roll_counter = 0
+                                    self.movement_manager.leave_jail(player_name)
+                                    self.movement_manager.resetJailRolls(player_name)
                                 break
                 else:
                     pass
+
+
 
                 # Roll
                 roll = self.movement_manager.roll_dice(player_name)
@@ -214,7 +278,6 @@ class Main:
 
             # End of turn. Transition into next turn
             print("OUT of all loops")
-            double_roll_counter = 0
             player_counter += 1
             if player_counter == len(self.players):
                 player_counter = 0
