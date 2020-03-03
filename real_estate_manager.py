@@ -24,7 +24,6 @@ class RealEstateManager:
                         if self.available_houses - num_of_houses > 0:
                             property_manager.update_houses(final_num_of_houses,
                                                                 prop_name)  # num_of_houses and prop_name are given inputs. Where are those inputs stored?
-                            self.available_houses -= num_of_houses
                             total_cost = money_owned - (property_build_cost * num_of_houses)
                             total_cost = str(total_cost)
                             self.db.write_value("money", total_cost, player_name)
@@ -104,11 +103,12 @@ class RealEstateManager:
     def trade_in(self):
         pass
 
+
     # private
     def can_build(self, is_house):  # indent expected?
         """Determines whether it is possible to build a house or hotel.
          Input: is_house, bool that is 1 if want to build house, 0 if want to build hotel
-         Return: bool indicating whether can build 
+         Return: bool indicating whether can build
          Class_vars_mod_: none
          """
         if is_house == 1:

@@ -69,6 +69,33 @@ class MovementManager:
         """
         self.db.write_value("jail_roll_counter", "0", player_name)
 
+    def getNumDoubleRolls(self, player_name):
+        """
+        Get the number of double rolls the player currently has
+        :param player_name: player name
+        :return: Num of current double rolls (int)
+        """
+        numRolls = self.db.read_value(player_name, "double_roll_counter")
+        return int(numRolls)
+
+    def incrementDoubleRolls(self, player_name):
+        """
+        Increment the player's number of double rolls
+        :param player_name: player name
+        :return: None
+        """
+        currentNumRolls = int(self.getNumDoubleRolls(player_name))
+        newNumRolls = currentNumRolls + 1
+        self.db.write_value("double_roll_counter", str(newNumRolls), player_name)
+
+    def resetNumDoubleRolls(self, player_name):
+        """
+        Reset the player's number of double rolls
+        :param player_name: Player name
+        :return: None
+        """
+        self.db.write_value("double_roll_counter", "0", player_name)
+
     def move(self, player_name, number_of_spaces):
         """
         Moves the player to their place after their roll

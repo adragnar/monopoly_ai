@@ -9,6 +9,7 @@ class PropertyManager:
         self.db = database.Database()
         self.row = []
         self.roww = []
+        self.numUnbuilt = []
         self.row_final = []
         self.a = database.Database()
 
@@ -257,6 +258,25 @@ class PropertyManager:
         if self.get_owner("Short Line") == player_name:
             total += 1
         return total
+
+
+    def getNumEmptyHouses(self, prop_colour):
+        """
+        Return a list containing the number of possible houses that may be built in each prop
+        :param prop_colour: prop colour (ex. 'orange')
+        :return: list
+        """
+        colour_monopolies = database_creator.db.query(
+            "SELECT num_of_houses FROM main_property_deck WHERE property_colour = :prop_colour", prop_colour=prop_colour)
+        self.numUnbuilt = []
+        for i in colour_monopolies:
+            d = 5-int(i.num_of_houses)
+            self.numUnbuilt.append(d)
+        #print(self.numUnbuilt)
+        return self.numUnbuilt
+
+
+
 
     # private
 
