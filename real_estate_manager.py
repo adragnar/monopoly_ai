@@ -1,4 +1,5 @@
 from database import Database
+import database_creator
 
 class RealEstateManager:
 
@@ -7,6 +8,7 @@ class RealEstateManager:
         self.available_houses = 32
         self.available_hotels = 12
         self.db = Database()
+
 
     def build_real_estate(self, num_of_houses, prop_name, player_name, property_manager):  # Where is the player_name input stored?
         """Builds houses and hotels on houses with monopolies
@@ -99,6 +101,20 @@ class RealEstateManager:
             self.db.write_value("owner", current_player_name, i)
         '''
 
+    def get_prop_Names(self, colour):
+        """
+        Return a list of the prop names given a colour
+        :param colour: str prop colour
+        :return: list of prop names
+        """
+        props = database_creator.db.query(
+            "SELECT name FROM main_property_deck WHERE property_colour = :colour",
+            colour=colour)
+        numProps = []
+        for i in props:
+            numProps.append(i["name"])
+        # print(self.numUnbuilt)
+        return numProps
 
     def trade_in(self):
         pass

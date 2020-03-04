@@ -73,9 +73,9 @@ class PropertyManager:
         """Returns the number of houses on a specific property as an integer
         Inputs: property_name(str)
         Outputs: num_houses(int)"""
-
-        num_houses = self.db.read_value(property_name, "num_of_houses")
-        return int(num_houses)
+        print("property name = ", property_name)
+        num_houses = int(self.db.read_value(property_name, "num_of_houses"))
+        return num_houses
 
     def get_monopolies(self):
         """Returns the owner and colour of all monopolies on the board
@@ -276,6 +276,18 @@ class PropertyManager:
         return self.numUnbuilt
 
 
+    def getProperties(self, prop_colour):
+        """
+        Return a list of all properties given a colour
+        :param prop_colour: prop colour
+        :return: list
+        """
+        props = database_creator.db.query(
+            "SELECT name FROM main_property_deck WHERE property_colour = :prop_colour", prop_colour=prop_colour)
+        properties = []
+        for i in props:
+            properties.append(i["name"])
+        return properties
 
 
     # private

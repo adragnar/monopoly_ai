@@ -39,6 +39,7 @@ class MovementManager:
         """
         dice1 = random.randint(1,6)
         dice2 = random.randint(1,6)
+        self.roll = dice1 + dice2
         roll = dice1 + dice2
         return [roll, dice1, dice2]
 
@@ -69,7 +70,7 @@ class MovementManager:
         """
         self.db.write_value("jail_roll_counter", "0", player_name)
 
-    def getNumDoubleRolls(self, player_name):
+    def  getNumDoubleRolls(self, player_name):
         """
         Get the number of double rolls the player currently has
         :param player_name: player name

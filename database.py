@@ -20,7 +20,7 @@ class Database:
                       "rent_for_one_railroad", "rent_for_two_railroads", "rent_for_three_railroads",
                       "rent_for_four_railroads", "board_position", "property_colour", "is_a_monopoly"]:
             final = self.db.query("SELECT " + column + " FROM main_property_deck WHERE name = :row", row=row)
-        elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles"]:
+        elif column in ["player_name", "spot_on_board", "money", "num_get_out_of_jail", "is_in_jail", "num_of_doubles", "double_roll_counter"]:
             final = self.db.query("SELECT " + column + " FROM player_information WHERE player_name = :row", row=row)
         elif column in ["chance_name", "chance_money_gained", "chance_money_lost", "chance_move_forward",
                         "chance_move_backward"]:

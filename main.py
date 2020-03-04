@@ -18,8 +18,8 @@ class Main:
         self.num_npc = 0
 
     def main(self):
-        print(self.property_manager.getNumEmptyHouses("orange"))
-        print(self.property_manager.get_monopolies())
+        #print(self.property_manager.getNumEmptyHouses("orange"))
+        #print(self.property_manager.get_monopolies())
         self.num_players = int(input("How many players total are in the game (including me)?: "))
         for i in range(1, self.num_players + 1):
             self.players.append("Player " + str(i))
@@ -33,12 +33,15 @@ class Main:
         turnNum = 1
         player_counter = 0
         while 1:
+            print("Player counter =", player_counter)
+            print(self.players)
             player_name = self.players[player_counter]
             print("The player name is", player_name)
             # Roll / jail
 
             # Turn begins
-            while 3 > self.movement_manager.getNumDoubleRolls(player_name) > -1:
+            while 3 <= self.movement_manager.getNumDoubleRolls(player_name):
+                print("here")
                 # If they land on Chance or Community Chest spot
                 community_chest_spots = ["2", "17", "33"]
                 chance_spots = ["7", "22", "36"]
@@ -142,246 +145,332 @@ class Main:
                 else:
                     pass
 
-                # Handle NPC movement on normal rolls
+            # Handle NPC movement on normal rolls
+            if player_name[0] == "N":
+                print("NPC rolling")
+                roll = self.movement_manager.npcDiceRoll()
+                dice1 = roll[1]
+                dice2 = roll[2]
+                roll = roll[0]
+            else:
+                # Roll
+                print("regular rolling")
+                roll = self.movement_manager.roll_dice(player_name)
+                dice1 = roll[1]
+                dice2 = roll[2]
+                roll = roll[0]
+
+            print("The roll is", roll)
+            print("dice1 = ", dice1)
+            print("dice2 = ", dice2)
+            if dice1 == dice2:
+                self.movement_manager.incrementDoubleRolls(player_name)
+            else:
+                self.movement_manager.resetNumDoubleRolls(player_name)
+
+            if self.movement_manager.getNumDoubleRolls(player_name) == 3:
+                self.movement_manager.go_to_jail(player_name)
+                break
+            else:
+                pass
+
+            # Player's turn in jail continued
+
+
+
+            # Move/go to jail
+            previous_location_value = self.movement_manager.get_current_location_value(player_name)
+            self.movement_manager.move(player_name, roll)
+            # Move to jail when land on 'Go to Jail' square
+            print("prev = ", int(previous_location_value))
+            print("current = ", int(self.movement_manager.get_current_location_value(player_name)))
+            if int(previous_location_value) + roll == 30:
+                self.movement_manager.go_to_jail(player_name)
+                break
+            else:
+                pass
+
+            # Check to see if it can be purchased
+            prop_name = self.property_manager.get_current_property_name(player_name, self.movement_manager)
+            if self.property_manager.get_is_property_available(prop_name) == "yes":
                 if player_name[0] == "N":
-                    roll = self.movement_manager.npcDiceRoll(player_name)
-                    dice1 = roll[1]
-                    dice2 = roll[2]
-                    roll = roll[0]
-                else:
-                    # Roll
-                    roll = self.movement_manager.roll_dice(player_name)
-                    dice1 = roll[1]
-                    dice2 = roll[2]
-                    roll = roll[0]
-
-                print("The roll is", roll)
-                print("dice1 = ", dice1)
-                print("dice2 = ", dice2)
-                if dice1 == dice2:
-                    self.movement_manager.incrementDoubleRolls(player_name)
-                else:
-                    self.movement_manager.resetNumDoubleRolls(player_name)
-
-                if self.movement_manager.getNumDoubleRolls(player_name) == 3:
-                    self.movement_manager.go_to_jail(player_name)
-                    break
-                else:
-                    pass
-
-                # Player's turn in jail continued
-
-
-
-                # Move/go to jail
-                previous_location_value = self.movement_manager.get_current_location_value(player_name)
-                self.movement_manager.move(player_name, roll)
-                # Move to jail when land on 'Go to Jail' square
-                print("prev = ", int(previous_location_value))
-                print("current = ", int(self.movement_manager.get_current_location_value(player_name)))
-                if int(previous_location_value) + roll == 30:
-                    self.movement_manager.go_to_jail(player_name)
-                    break
-                else:
-                    pass
-
-                # Check to see if it can be purchased
-                prop_name = self.property_manager.get_current_property_name(player_name, self.movement_manager)
-                if self.property_manager.get_is_property_available(prop_name) == "yes":
-                    if player_name[0] == "N":
-                        # Logic for NPC property buying
-                        # IF there are no monopolies currently on the board
-                        if self.property_manager.get_monopolies() is None:
-                            # If NPC can afford property
-                            if self.property_manager.get_balance(player_name) > self.property_manager.get_property_price(prop_name):
-                                self.property_manager.buy_property(player_name, self.movement_manager)
-                                print("Property purchased")
-                            else:
-                                print("Property not purchased")
-                        else:
-                            # If there are monopolies on the board and the player has $300+
-                            if self.property_manager.get_balance(player_name) >= 300:
-                                self.property_manager.buy_property(player_name, self.movement_manager)
-                                print("Property purchased")
-                            else:
-                                print("Property not purchased")
-                    else:
-                        purchase = input("Was the property purchased? (yes/no):")
-                        #If the property was purchased
-                        if purchase == "yes":
+                    # Logic for NPC property buying
+                    # IF there are no monopolies currently on the board
+                    if self.property_manager.get_monopolies() is None:
+                        # If NPC can afford property
+                        if self.property_manager.get_balance(player_name) > self.property_manager.get_property_price(prop_name):
                             self.property_manager.buy_property(player_name, self.movement_manager)
+                            print("Property purchased")
                         else:
-                            print("The property was not purchased")
+                            print("Property not purchased")
+                    else:
+                        # If there are monopolies on the board and the player has $300+
+                        if self.property_manager.get_balance(player_name) >= 300:
+                            self.property_manager.buy_property(player_name, self.movement_manager)
+                            print("Property purchased")
+                        else:
+                            print("Property not purchased")
                 else:
-                    # VERY IMPORTANT!!!!!!!!!!!!!!!!! SETS UNDOCUMENTED MONOPOLIES TO "YES"
-                    self.property_manager.get_monopolies()
-                    # If the property is not available pay rent (this function takes care of all rent/tax stuff).
-                    self.rent_manager.pay_rent(player_name, self.property_manager, self.movement_manager)
-                    if self.property_manager.get_balance(player_name) < 0:
+                    purchase = input("Was the property purchased? (yes/no):")
+                    #If the property was purchased
+                    if purchase == "yes":
+                        self.property_manager.buy_property(player_name, self.movement_manager)
+                    else:
+                        print("The property was not purchased")
+            else:
+                # VERY IMPORTANT!!!!!!!!!!!!!!!!! SETS UNDOCUMENTED MONOPOLIES TO "YES"
+                self.property_manager.get_monopolies()
+                # If the property is not available pay rent (this function takes care of all rent/tax stuff).
+                self.rent_manager.pay_rent(player_name, self.property_manager, self.movement_manager)
+                if self.property_manager.get_balance(player_name) < 0:
+                    # Handle Bankruptcy for NPC (I.E. Selling houses if possible)
+                    if player_name[0] == "N":
+                        monopolies = self.property_manager.get_monopolies()
+                        colours = []
+
+                        for i in monopolies:
+                            if player_name == i[0]:
+                                colours.append(i[1])
+
+                        for i in colours:
+                            numIndividualEmptyHouseSlots = self.property_manager.getNumEmptyHouses(i)
+                            properties = self.property_manager.getProperties(i)
+                            for j in range(len(numIndividualEmptyHouseSlots)):
+                                if numIndividualEmptyHouseSlots[j] < 5:
+                                    self.real_estate_manager.sell_real_estate(1, properties[j], player_name, self.property_manager)
+                                if self.property_manager.get_balance(player_name) >= 0:
+                                    break
+                            if self.property_manager.get_balance(player_name) >= 0:
+                                break
+                        if self.property_manager.get_balance(player_name) < 0:
+                            print(player_name + " is bankrupt")
+                            self.players.pop(player_counter)
+                    else:
                         print(player_name + " is bankrupt")
                         self.players.pop(player_counter)
-                    else:
-                        pass
-                #Debugged
+                else:
+                    pass
+            #Debugged
 
 
-                # TODO Deal with Chance and Community Chest Cards
+            # TODO Deal with Chance and Community Chest Cards
 
-                # Post property buying / rent (Building)
-                # Real estate buying/selling
-                if player_name[0] == "N":
-                    # If they have a monopoly, if they can build, build as much as possible. If there are other monopolies, save a bit of money
-                    monopolies = self.property_manager.get_monopolies()
-                    colours = []
-                    prices = []
-                    for i in monopolies:
-                        if player_name == i[0]:
+            # Post property buying / rent (Building)
+            # Real estate buying/selling
+            if player_name[0] == "N":
+                # If they have a monopoly, if they can build, build as much as possible. If there are other monopolies, save a bit of money
+                monopolies = self.property_manager.get_monopolies()
+                colours = []
+                prices = []
+                for i in monopolies:
+                    if player_name == i[0]:
+                        if i[1] not in colours:
                             colours.append(i[1])
 
-                    # Query for properties of the colours retrieved from the get_monopolies() function
-                    for i in colours:
-                        if i[1] == "purple":
-                            prices.append(int(self.db.read_value("Mediterranean Ave.", "real_estate_price")))
-                        elif i[1] == "grey":
-                            prices.append(int(self.db.read_value("Oriental Ave.", "real_estate_price")))
-                        elif i[1] == "pink":
-                            prices.append(int(self.db.read_value("St. Charles Place", "real_estate_price")))
-                        elif i[1] == "orange":
-                            prices.append(int(self.db.read_value("St. James Place", "real_estate_price")))
-                        elif i[1] == "red":
-                            prices.append(int(self.db.read_value("Kentucky Ave.", "real_estate_price")))
-                        elif i[1] == "yellow":
-                            prices.append(int(self.db.read_value("Atlantic Ave.", "real_estate_price")))
-                        elif i[1] == "green":
-                            prices.append(int(self.db.read_value("Pacific Ave.", "real_estate_price")))
-                        elif i[1] == "blue":
-                            prices.append(int(self.db.read_value("Park Place", "real_estate_price")))
+
+                # Query for properties of the colours retrieved from the get_monopolies() function
+                for i in colours:
+                    if i == "purple":
+                        prices.append(int(self.db.read_value("Mediterranean Ave.", "real_estate_price")))
+                    elif i == "grey":
+                        prices.append(int(self.db.read_value("Oriental Ave.", "real_estate_price")))
+                    elif i == "pink":
+                        prices.append(int(self.db.read_value("St. Charles Place", "real_estate_price")))
+                    elif i == "orange":
+                        prices.append(int(self.db.read_value("St. James Place", "real_estate_price")))
+                    elif i == "red":
+                        prices.append(int(self.db.read_value("Kentucky Ave.", "real_estate_price")))
+                    elif i == "yellow":
+                        prices.append(int(self.db.read_value("Atlantic Ave.", "real_estate_price")))
+                    elif i == "green":
+                        prices.append(int(self.db.read_value("Pacific Ave.", "real_estate_price")))
+                    elif i == "blue":
+                        prices.append(int(self.db.read_value("Park Place", "real_estate_price")))
+                    else:
+                        pass
+
+                print("colours = ",colours)
+                print("prices = ", prices)
+
+
+                for i in range(len(colours)):
+                    if self.property_manager.get_balance(player_name) > prices[i]:
+                        numPotentialBuyingHouses = self.property_manager.get_balance(player_name) // prices[i]
+                        numIndividualEmptyHouseSlots = self.property_manager.getNumEmptyHouses(colours[i])
+                        if len(numIndividualEmptyHouseSlots) == 3:
+                            print("numIndividualEmptyHouseSlots = ", numIndividualEmptyHouseSlots)
+                            numSumEmptyHouseSlots = numIndividualEmptyHouseSlots[0] + numIndividualEmptyHouseSlots[1] + numIndividualEmptyHouseSlots[2]
+                        elif len(numIndividualEmptyHouseSlots) == 2:
+                            print("numIndividualEmptyHouseSlots = ", numIndividualEmptyHouseSlots)
+                            numSumEmptyHouseSlots = numIndividualEmptyHouseSlots[0] + numIndividualEmptyHouseSlots[1] + numIndividualEmptyHouseSlots[2]
+
+                        # What I can buy after related to everything
+                        potentialHouses = 0
+                        potentialHotels = 0
+                        # If houses are being built
+                        if numSumEmptyHouseSlots > 3:
+                            if numPotentialBuyingHouses >= 1:
+                                if numPotentialBuyingHouses <= self.real_estate_manager.available_houses:
+                                    # Represents all potential real estate (houses and hotels combined here)
+                                    potentialHouses = numPotentialBuyingHouses
+                                elif numPotentialBuyingHouses > self.real_estate_manager.available_houses:
+                                    potentialHouses = self.real_estate_manager.available_houses
                         else:
+                            # Build just hotels
+                            print("Just hotels")
+                            if numPotentialBuyingHouses >= 1:
+                                if numPotentialBuyingHouses <= self.real_estate_manager.available_hotels:
+                                    potentialHotels = numPotentialBuyingHouses
+                                elif numPotentialBuyingHouses > self.real_estate_manager.available_hotels:
+                                    potentialHotels = self.real_estate_manager.available_hotels
+
+
+                        if potentialHouses <= numSumEmptyHouseSlots - 3 or numSumEmptyHouseSlots - potentialHouses >= 3:
+                            # All "potentialHouses" are houses
                             pass
-
-                    for i in colours:
-                        if self.property_manager.get_balance(player_name) > i:
-                            numPotentialBuyingHouses = self.property_manager.get_balance(player_name) // i
-                            numIndividualEmptyHouseSlots = self.property_manager.getNumEmptyHouses(i)
-                            for i in numIndividualEmptyHouseSlots:
-                                if len(numIndividualEmptyHouseSlots) == 3:
-                                    numSumEmptyHouseSlots = i[0] + i[1] + i[2]
-                                elif len(numIndividualEmptyHouseSlots) == 2:
-                                    numSumEmptyHouseSlots = i[0] + i[1]
-
-                            # What I can buy after related to everything
-                            potentialHouses = 0
-                            potentialHotels = 0
-                            # If houses are being built
-                            if numSumEmptyHouseSlots > 3:
-                                if numPotentialBuyingHouses >= 1:
-                                    if numPotentialBuyingHouses <= self.real_estate_manager.available_houses:
-                                        # Represents all potential real estate (houses and hotels combined here)
-                                        potentialHouses = numPotentialBuyingHouses
-                                    elif numPotentialBuyingHouses > self.real_estate_manager.available_houses:
-                                        potentialHouses = self.real_estate_manager.available_houses
-                            else:
-                                # Build just hotels
-                                if numPotentialBuyingHouses >= 1:
-                                    if numPotentialBuyingHouses <= self.real_estate_manager.available_hotels:
-                                        potentialHotels = numPotentialBuyingHouses
-                                    elif numPotentialBuyingHouses > self.real_estate_manager.available_hotels:
-                                        potentialHotels = self.real_estate_manager.available_hotels
+                        else:
+                            print("Getting houses and hotels")
+                            print("all real estate = ", potentialHouses)
+                            print("numSumEmptyHOuseSLots = ", numSumEmptyHouseSlots)
+                            potentialHotels = potentialHouses - numSumEmptyHouseSlots + 3
+                            print("potential hotels = ", potentialHotels)
+                            potentialHouses = potentialHouses - potentialHotels + 3
 
 
-                            if potentialHouses <= numSumEmptyHouseSlots - 3 or numSumEmptyHouseSlots - potentialHouses >= 3:
-                                # All "potentialHouses" are houses
-                                pass
-                            else:
-                                potentialHotels = potentialHouses - numSumEmptyHouseSlots + 3
-                                potentialHouses = potentialHouses - potentialHotels
+                        # Get the order of the houses that are going to be built
+                        if potentialHouses > 0 :
+                            propOrder = sorted(numIndividualEmptyHouseSlots, reverse=True)
+                            propNameOrder = []
+
+                            if len(numIndividualEmptyHouseSlots) == 2:
+                                print("size 2")
+                                firstPropNum = numIndividualEmptyHouseSlots[0]
+                                secondPropNum = numIndividualEmptyHouseSlots[1]
+                                thirdPropNum = -1
+                                props = [firstPropNum, secondPropNum, thirdPropNum]
+
+                                potentialProps = ["first", "second"]
+                                print("propOrder = ", propOrder)
+                                for i in propOrder:
+                                    if i == firstPropNum:
+                                        if "first" in potentialProps:
+                                            propNameOrder.append("first")
+                                        else:
+                                            propNameOrder.append("second")
+                                    elif i == secondPropNum:
+                                        if "second" in potentialProps:
+                                            propNameOrder.append("second")
+                                        else:
+                                            propNameOrder.append("first")
+
+                            elif len(numIndividualEmptyHouseSlots) == 3:
+                                print("size 3")
+                                firstPropNum = numIndividualEmptyHouseSlots[0]
+                                secondPropNum = numIndividualEmptyHouseSlots[1]
+                                thirdPropNum = numIndividualEmptyHouseSlots[2]
+                                props = [firstPropNum]
+
+                                potentialProps = ["first", "second", "third"]
 
 
-                            # Get the order of the houses that are going to be built
-                            if potentialHouses > 0 :
-                                propOrder = numIndividualEmptyHouseSlots.sort(reverse = True)
-                                propNameOrder = []
-
-                                if len(numIndividualEmptyHouseSlots) == 2:
-                                    firstPropNum = numIndividualEmptyHouseSlots[0]
-                                    secondPropNum = numIndividualEmptyHouseSlots[1]
-                                    thirdPropNum = -1
-                                    props = [firstPropNum, secondPropNum, thirdPropNum]
-
-                                    potentialProps = ["first", "second"]
-                                    for i in propOrder:
-                                        if i == firstPropNum:
-                                            if "first" in potentialProps:
-                                                propNameOrder.append("first")
-                                            else:
-                                                propNameOrder.append("second")
-                                        elif i == secondPropNum:
+                                for d in propOrder:
+                                    print("IDk")
+                                    if d == thirdPropNum:
+                                        print("third")
+                                        if "third" in potentialProps:
+                                            propNameOrder.append("third")
+                                            potentialProps.pop(len(potentialProps)-1)
+                                        elif d == secondPropNum:
+                                            print("second inside")
                                             if "second" in potentialProps:
-                                                propNameOrder.append("second")
-                                            else:
-                                                propNameOrder.append("first")
-
-                                elif len(numIndividualEmptyHouseSlots) == 3:
-                                    firstPropNum = numIndividualEmptyHouseSlots[0]
-                                    secondPropNum = numIndividualEmptyHouseSlots[1]
-                                    thirdPropNum = numIndividualEmptyHouseSlots[2]
-                                    props = [firstPropNum]
-
-                                    potentialProps = ["first", "second", "third"]
-                                    for i in propOrder:
-                                        if i == thirdPropNum:
-                                            if "third" in potentialProps:
-                                                propNameOrder.append("third")
-                                                potentialProps.pop(len(potentialProps)-1)
-                                            elif i == secondPropNum:
-                                                if "second" in potentialProps:
-                                                    propNameOrder.append("second")
-                                                    if "first" in potentialProps:
-                                                        potentialProps.pop(len(potentialProps) - 1)
-                                                    elif "third" in potentialProps:
-                                                        potentialProps.pop(0)
-                                            elif i == firstPropNum:
-                                                if "first" in potentialProps:
-                                                    propNameOrder.append("first")
-                                                    potentialProps.pop(0)
-                                        elif i == secondPropNum:
-                                            if "second" in potentialProps:
+                                                print("second exists")
                                                 propNameOrder.append("second")
                                                 if "first" in potentialProps:
-                                                    potentialProps.pop(len(potentialProps)-1)
+                                                    potentialProps.pop(len(potentialProps) - 1)
                                                 elif "third" in potentialProps:
                                                     potentialProps.pop(0)
-                                            elif i == firstPropNum:
+                                            elif d == firstPropNum:
+                                                print("first inside")
                                                 if "first" in potentialProps:
+                                                    print("first exists")
                                                     propNameOrder.append("first")
                                                     potentialProps.pop(0)
-                                            elif i == thirdPropNum:
-                                                if "third" in potentialProps:
-                                                    propNameOrder.append("third")
-                                                    potentialProps.pop(len(potentialProps) - 1)
-                                        elif i == firstPropNum:
+                                    elif d == secondPropNum:
+                                        print("second")
+                                        if "second" in potentialProps:
+                                            propNameOrder.append("second")
+                                            if "first" in potentialProps:
+                                                potentialProps.pop(len(potentialProps)-1)
+                                            elif "third" in potentialProps:
+                                                potentialProps.pop(0)
+                                        elif d == firstPropNum:
                                             if "first" in potentialProps:
                                                 propNameOrder.append("first")
                                                 potentialProps.pop(0)
-                                            elif i == secondPropNum:
-                                                if "second" in potentialProps:
-                                                    propNameOrder.append("second")
-                                                    if "first" in potentialProps:
-                                                        potentialProps.pop(len(potentialProps) - 1)
-                                                    elif "third" in potentialProps:
-                                                        potentialProps.pop(0)
-                                            elif i == thirdPropNum:
+                                            elif d == thirdPropNum:
+                                                if "third" in potentialProps:
+                                                    propNameOrder.append("third")
+                                                    potentialProps.pop(len(potentialProps) - 1)
+                                    elif d == firstPropNum:
+                                        print("first")
+                                        if "first" in potentialProps:
+                                            propNameOrder.append("first")
+                                            potentialProps.pop(0)
+                                        elif d == secondPropNum:
+                                            if "second" in potentialProps:
+                                                propNameOrder.append("second")
+                                                if "first" in potentialProps:
+                                                    potentialProps.pop(len(potentialProps) - 1)
+                                                elif "third" in potentialProps:
+                                                    potentialProps.pop(0)
+                                            elif d == thirdPropNum:
                                                 if "third" in potentialProps:
                                                     propNameOrder.append("third")
                                                     potentialProps.pop(len(potentialProps) - 1)
 
-                            # Build here. Need prop names though
+                            # Get the property names in order
+                            if len(propNameOrder) != 0:
+                                propNameListOrder = []
+                                propNames = self.real_estate_manager.get_prop_Names(colours[i])
+                                print("Getting prop names = ", propNames)
+                                print("Prop name order = ", propNameOrder)
+                                print("Prop num order = ", )
+                                for j in propNameOrder:
+                                    if j == "first":
+                                        propNameListOrder.append(propNames[0])
+                                    elif j == "third":
+                                        propNameListOrder.append(propNames[len(propNames)-1])
+                                    elif j == "second":
+                                        if "first" in propNameOrder:
+                                            propNameListOrder.append(propNames[1])
+                                        elif "third" in propNameOrder:
+                                            propNameListOrder.append(propNames[0])
+                                        else:
+                                            propNameListOrder.append(0)
+
+                                # Build
+                                while potentialHouses > 0:
+                                    print("Potential Hotels = ", potentialHotels)
+                                    print("PropNameListOrder = ", propNameListOrder)
+                                    print("Houses left = ", self.real_estate_manager.available_houses)
+                                    print("Hotels left = ", self.real_estate_manager.available_hotels)
+                                    print("potentialHOuses = ", potentialHouses)
+                                    for k in range(len(propNameListOrder)):
+                                        if potentialHouses > 0:
+                                            if propOrder[k] > 1:
+                                                self.real_estate_manager.build_real_estate(1, propNameListOrder[k], player_name, self.property_manager)
+                                                self.real_estate_manager.available_houses -= 1
+                                                potentialHouses -= 1
+                                            elif propOrder[k] == 1:
+                                                self.real_estate_manager.build_real_estate(1, propNameListOrder[k], player_name, self.property_manager)
+                                                self.real_estate_manager.available_hotels -= 1
+                                                potentialHotels -=1
+                                            else:
+                                                pass
 
 
 
-
-
-
+            if player_name[0] != "N":
                 real_estate_bought = input("Was any real estate bought? (yes/no): ")
                 if real_estate_bought == "yes":
                     num_properties = input("How many properties was real estate bought on?: ")
@@ -398,6 +487,10 @@ class Main:
                         self.db.write_value("money", new_balance, player_name)
                 else:
                     pass
+
+
+
+
 
                 real_estate_sold = input("Was any real estate sold? (yes/no): ")
                 if real_estate_sold == "yes":
